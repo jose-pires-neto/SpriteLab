@@ -1,0 +1,16 @@
+{
+  "version": "0.4.3",
+  "app": "/Users/josepires/Applications/SpriteLab.app",
+  "checked_at": "2026-10-13T19:15:11.610Z",
+  "live": {
+    "tools": 50,
+    "active_document": "editor",
+    "revision": 2,
+    "preview_image": true,
+    "unchanged": true
+  },
+  "headless": {
+    "tools": 50,
+    "isolated": true
+  }
+}

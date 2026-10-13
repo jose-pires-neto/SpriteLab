@@ -34,3 +34,11 @@ O último comando é headless. `spritelab --workspace assets --host` também pod
 ## Limites
 
 Transporte local Unix validado no macOS; named pipes do Windows ainda não existem. Até 16 conexões, 16 MiB por mensagem e timeout de resposta/escrita; a conexão do servidor pode permanecer ociosa. Encerrar o MCP não fecha a sessão do editor. Encerrar o editor fecha o host; resultados de requests interrompidos não devem ser tratados como rollback. Não há retry automático de mutações, recuperação pós-crash ou reconexão transparente. Metadata/socket obsoletos podem persistir após saída abrupta; descoberta ignora PIDs encerrados.
+
+## Instalação fixa para uso diário — 0.4.3
+
+Aplicativo: `~/Applications/SpriteLab.app`, assinatura local verificada. MCP global e override do projeto apontam para `outputs/runtime-0.4.3/mcp/server.mjs` e `outputs/runtime-0.4.3/spritelab`; dependências Node foram copiadas junto. Essa versão permanece fixa durante novos builds de desenvolvimento. Não mova o repositório/pasta outputs sem atualizar os caminhos. Node continua em `/opt/homebrew/bin/node`.
+
+Abra SpriteLab antes de conectar/recarregar os MCPs no Codex. No chat novo, use `spritelab_live` para ver e editar a janela; `spritelab_headless` é uma sessão independente. Para verificar, peça primeiro `editor.inspect`, catálogo e preview do documento selecionado. O MCP live anexa à sessão mais recente do workspace; com várias versões abertas, confirme documento/revisão antes de editar. A conexão não migra automaticamente para outra janela.
+
+O registro global foi verificado com `codex mcp get`. O SDK oficial também verificou 50 tools nos dois modos, preview isolado de camada e leitura sem mutação da sessão live. Evidência: `installed-mcp-0.4.3.json`. A conexão de um novo chat no próprio Codex ainda precisa ser confirmada pelo usuário; o catálogo deste chat já aberto não foi recarregado. Se live não aparecer, mantenha SpriteLab aberto e reinicie o Codex. Configuração segue a [documentação oficial de MCP](https://learn.chatgpt.com/docs/extend/mcp?surface=cli).
