@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { invoke } from "@tauri-apps/api/core";
 import "./style.css";
+import { ToolIcon, FrameThumbnail } from "./studio";
 type Doc = {
   width: number;
   height: number;
@@ -41,6 +42,16 @@ function App() {
   const [color, C] = useState("#e3a75c");
   const [zoom, Z] = useState(12);
   const [status, S] = useState("Iniciando…");
+  const [recovery, Recovery] = useState<
+    {
+      entry: string;
+      source_path?: string;
+      document_id: string;
+      error?: string;
+      updated_ms: number;
+    }[]
+  >([]);
+  const [recoveryError, RecoveryError] = useState<string>();
   const [files, Files] = useState<string[]>([]);
   const [root, Root] = useState("");
   const [name, N] = useState("sem-titulo");
@@ -207,7 +218,7 @@ function App() {
             ? l
             : current.current!.layers[0].id,
       });
-      S(command + " · revisão " + rev.current);
+      S(command + " / revisão " + rev.current);
     } catch (e) {
       gesture.current = undefined;
       S(String(e));
@@ -235,6 +246,48 @@ function App() {
       }
     })();
   }, []);
+  useEffect(() => {
+    const update = async () => {
+      try {
+        const result: any = await invoke("execute", {
+          request: { command: "recovery.list", args: {} },
+        });
+        if (!result.ok) throw Error(result.error.message);
+        Recovery(result.result.entries);
+        const info: any = await invoke("workspace");
+        RecoveryError(info.recovery_error ?? undefined);
+      } catch (e) {
+        RecoveryError(String(e));
+      }
+    };
+    void update();
+    const timer = setInterval(() => void update(), 15000);
+    return () => clearInterval(timer);
+  }, []);
+  const restore = async (entry: string) => {
+    try {
+      const next = "recovered-" + Date.now();
+      const response: any = await invoke("execute", {
+        request: {
+          document_id: next,
+          command: "recovery.restore",
+          args: { entry },
+        },
+      });
+      if (!response.ok) throw Error(response.error.message);
+      documentId.current = next;
+      rev.current = 0;
+      await configure({ document_id: next, playback: false });
+      await refresh();
+      N("recuperado");
+      Dirty(true);
+      S(
+        "Trabalho recuperado em um novo documento. Salve para escolher o arquivo.",
+      );
+    } catch (e) {
+      S(String(e));
+    }
+  };
   useEffect(() => {
     if (!play || !d) return;
     const timer = setTimeout(
@@ -300,11 +353,11 @@ function App() {
           if (v.layer_id) L(v.layer_id);
           if (changed) {
             await refresh(v.frame_id);
-            S("Sessão sincronizada · revisão " + rev.current);
+            S("Sessão sincronizada / revisão " + rev.current);
           }
         } else if (documentId.current) {
           clearDocument();
-          S("Nenhum documento selecionado · crie ou abra um projeto");
+          S("Nenhum documento selecionado / crie ou abra um projeto");
         }
       } catch (e) {
         S(String(e));
@@ -652,7 +705,12 @@ function App() {
   return (
     <div className="app">
       <header>
-        <strong>▟ SpriteLab</strong>
+        <strong className="brand">
+          <span className="brand-mark" aria-hidden="true">
+            ▟
+          </span>{" "}
+          SpriteLab <small>Studio</small>
+        </strong>
         <span>
           {name}
           {dirty ? " •" : ""}
@@ -679,7 +737,7 @@ function App() {
         </select>
         <button onClick={() => void fresh()}>Novo</button>
         <button disabled={!d} onClick={() => void save()}>
-          Salvar ⌘S
+          Salvar
         </button>
         <button disabled={!d} onClick={() => void exportFile()}>
           PNG
@@ -704,7 +762,7 @@ function App() {
               view({ zoom: +e.target.value });
             }}
           >
-            {[1, 2, 4, 8, 12, 16, 24].map((z) => (
+            {[1, 2, 4, 6, 8, 12, 16, 24].map((z) => (
               <option key={z} value={z}>
                 {z * 100}%
               </option>
@@ -807,7 +865,7 @@ function App() {
             ["rectangle", "□", "Retângulo (U)"],
             ["ellipse", "○", "Elipse"],
             ["select", "⌗", "Seleção (M)"],
-          ].map(([t, i, label]) => (
+          ].map(([t, , label]) => (
             <button
               title={label}
               aria-label={label}
@@ -818,7 +876,7 @@ function App() {
                 view({ tool: t });
               }}
             >
-              {i}
+              <ToolIcon tool={t} />
             </button>
           ))}
           <input
@@ -894,7 +952,9 @@ function App() {
         <aside>
           <fieldset disabled={!d}>
             <section>
-              <h2>PALETA</h2>
+              <h2>
+                Paleta <small>Cor & luz</small>
+              </h2>
               <div className="palette">
                 {(d?.palette.length
                   ? d.palette.map(
@@ -1163,7 +1223,7 @@ function App() {
             </section>
           </fieldset>
           <section>
-            <h2>ARQUIVOS</h2>
+            <h2>Biblioteca</h2>
             <p className="path">{root}</p>
             <div className="files">
               {files
@@ -1198,11 +1258,76 @@ function App() {
               Duplo clique renomeia a camada.
             </p>
           </section>
+          <section className="recovery-panel">
+            <h2>
+              Recuperação <small>Automática • 15 s</small>
+            </h2>
+            <p className="hint">
+              Cópias independentes do arquivo salvo. Restaurar abre um novo
+              documento.
+            </p>
+            {recoveryError && (
+              <p role="alert" className="recovery-error">
+                {recoveryError}
+              </p>
+            )}
+            {!recovery.length && (
+              <p className="hint">
+                As cópias do trabalho em andamento aparecerão aqui.
+              </p>
+            )}
+            <div className="files">
+              {recovery.map((item) => (
+                <div className="recovery-entry" key={item.entry}>
+                  <button
+                    disabled={!!item.error}
+                    onClick={() => void restore(item.entry)}
+                    title={item.error ?? item.entry}
+                  >
+                    {item.source_path ?? item.document_id}
+                    <small>
+                      {item.error ??
+                        new Date(item.updated_ms).toLocaleString("pt-BR")}
+                    </small>
+                  </button>
+                  <button
+                    aria-label="Descartar cópia de recuperação"
+                    onClick={async () => {
+                      if (
+                        !(await ask(
+                          "Descartar esta cópia de recuperação? O documento aberto será preservado.",
+                        ))
+                      )
+                        return;
+                      try {
+                        const result: any = await invoke("execute", {
+                          request: {
+                            command: "recovery.delete",
+                            args: { entry: item.entry },
+                          },
+                        });
+                        if (!result.ok) throw Error(result.error.message);
+                        Recovery((items) =>
+                          items.filter((v) => v.entry !== item.entry),
+                        );
+                      } catch (e) {
+                        S(String(e));
+                      }
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
         </aside>
       </main>
       <div className="timeline">
         <fieldset disabled={!d} className="timeline-header">
-          <strong>ANIMAÇÃO</strong>
+          <strong>
+            Animação <small>{d?.frames.length ?? 0} quadros</small>
+          </strong>
           <button
             onClick={() =>
               Play((v) => {
@@ -1211,7 +1336,7 @@ function App() {
               })
             }
           >
-            {play ? "Ⅱ Pausar" : "▶ Reproduzir"}
+            {play ? "Pausar" : "Reproduzir"}
           </button>
           <button
             onClick={() =>
@@ -1300,6 +1425,11 @@ function App() {
                   .catch((e) => S(String(e)));
               }}
             >
+              <FrameThumbnail
+                documentId={documentId.current}
+                frameId={v.id}
+                revision={rev.current}
+              />
               <b>{String(i + 1).padStart(2, "0")}</b>
               <small>{v.duration_ms} ms</small>
             </button>
@@ -1308,7 +1438,7 @@ function App() {
       </div>
       <footer>
         <span>{status}</span>
-        <span>Sessão local + MCP · v0.3.1</span>
+        <span>SpriteLab 0.4.0 / Sessão local + MCP</span>
       </footer>
       {panel && (
         <div className="command-panel">
@@ -1316,7 +1446,7 @@ function App() {
             COMMAND ENGINE <button onClick={() => Panel(false)}>×</button>
           </h2>
           <p>
-            Documento: {documentId.current} · revisão {rev.current}
+            Documento: {documentId.current} / revisão {rev.current}
           </p>
           <select value={operation} onChange={(e) => Operation(e.target.value)}>
             {catalog
