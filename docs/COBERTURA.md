@@ -30,3 +30,7 @@ Limites atuais: 512×512, 32 camadas, 64 frames, 4 documentos por sessão, 524.2
 6. Recursos completos de automação: jobs, notificações, cancelamento e idempotência; QA cruzado entre plataformas.
 
 Cada item só muda para implementado depois de código, teste do comportamento, prova de exposição MCP e validação do fluxo de uso. O objetivo continua sendo um editor completo, com cobertura rastreável, e não uma afirmação prematura de que todas as funções do Aseprite já existem.
+
+### Incremento 0.4.2
+
+Grade de cels, seleção conjunta de camada/quadro, transferência (copiar/mover) e limpeza, miniaturas canônicas, indicação de tags e ajuste de altura implementados. O engine valida transferências e fornece undo/redo, efeito `edit`, schemas e MCP. Ainda não há cels vinculados, seleção múltipla, timeline com docking, edição visual de intervalos de tags ou reprodução reversa/ping-pong.

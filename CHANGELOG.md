@@ -1,5 +1,13 @@
 # Histórico de versões
 
+## 0.4.2 — 13/10/2026
+
+- Timeline em grade de camadas/quadros com miniaturas canônicas, cels presentes/vazios, indicação de tags e altura ajustável.
+- Seleção conjunta de camada/quadro, cópia/colagem/limpeza; arrastar move e Option/Alt copia, com confirmação para substituir.
+- `cel.transfer` no Command Engine e MCP: bloqueios, destino ocupado, cópias independentes, rollback e undo/redo.
+- 33 testes Rust e 7 MCP passaram; cópia/colagem/undo verificados na GUI nativa com inspeção MCP do conteúdo.
+
+
 ## 0.4.1 — 13/10/2026
 
 - Reorganização do workspace: paleta e camadas fixas à direita, com rolagem independente.

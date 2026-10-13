@@ -1,0 +1,29 @@
+{
+  "version": "0.4.2",
+  "gui_copy_paste_verified": true,
+  "undo_restores_original": true,
+  "revision": 5,
+  "view": {
+    "alpha": 255,
+    "brush_size": 1,
+    "color": [
+      227,
+      167,
+      92,
+      255
+    ],
+    "document_id": "timeline-qa-042",
+    "filled": false,
+    "frame_id": 3,
+    "grid": false,
+    "layer_id": 1,
+    "mirror_x": false,
+    "mirror_y": false,
+    "onion_skin": false,
+    "pixel_perfect": false,
+    "playback": false,
+    "selection": null,
+    "tool": "stroke",
+    "zoom": 10
+  }
+}

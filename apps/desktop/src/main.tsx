@@ -3,7 +3,8 @@ import { createRoot } from "react-dom/client";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { invoke } from "@tauri-apps/api/core";
 import "./style.css";
-import { ToolIcon, FrameThumbnail, StudioMenu, ResourceDialog } from "./studio";
+import { ToolIcon, StudioMenu, ResourceDialog } from "./studio";
+import { CelTimeline } from "./timeline";
 type Doc = {
   width: number;
   height: number;
@@ -14,7 +15,8 @@ type Doc = {
     locked: boolean;
     opacity: number;
   }[];
-  frames: { id: number; duration_ms: number }[];
+  frames: { id: number; duration_ms: number; cels: Record<string, unknown> }[];
+  tags: { name: string; from_frame: number; to_frame: number }[];
   palette: number[][];
 };
 function App() {
@@ -1433,31 +1435,49 @@ function App() {
             ms
           </label>
         </fieldset>
-        <div className="frames">
-          {d?.frames.map((v, i) => (
-            <button
-              key={v.id}
-              className={f === v.id ? "active" : ""}
-              onClick={() => {
-                if (drawing.current) return;
-                Play(false);
-                F(v.id);
-                view({ frame_id: v.id, playback: false });
-                cmd("document.render", { frame_id: v.id })
-                  .then(paint)
-                  .catch((e) => S(String(e)));
-              }}
-            >
-              <FrameThumbnail
-                documentId={documentId.current}
-                frameId={v.id}
-                revision={rev.current}
-              />
-              <b>{String(i + 1).padStart(2, "0")}</b>
-              <small>{v.duration_ms} ms</small>
-            </button>
-          ))}
-        </div>
+        {d && (
+          <CelTimeline
+            documentId={documentId.current}
+            document={d}
+            frameId={f}
+            layerId={l}
+            revision={rev.current}
+            select={(cell) => {
+              if (drawing.current) return;
+              Play(false);
+              F(cell.frame_id);
+              L(cell.layer_id);
+              view({ ...cell, playback: false });
+              void refresh(cell.frame_id).catch((e) => S(String(e)));
+            }}
+            clear={(cell) => void run("cel.clear", cell)}
+            transfer={async (source, target, move) => {
+              if (drawing.current) return;
+              if (
+                source.layer_id === target.layer_id &&
+                source.frame_id === target.frame_id
+              )
+                return;
+              const exists = current.current?.frames.find(
+                (v) => v.id === target.frame_id,
+              )?.cels[target.layer_id];
+              if (
+                exists &&
+                !(await ask(
+                  "Substituir o cel de destino? Esta operação pode ser desfeita.",
+                ))
+              )
+                return;
+              await run("cel.transfer", {
+                source_layer_id: source.layer_id,
+                source_frame_id: source.frame_id,
+                ...target,
+                move_source: move,
+                overwrite: !!exists,
+              });
+            }}
+          />
+        )}
       </div>
       <footer>
         <span>{status}</span>
@@ -1489,7 +1509,7 @@ function App() {
               ))}
             </select>
           </label>
-          <span>v0.4.1</span>
+          <span>v0.4.2</span>
         </div>
       </footer>
       {resource && (

@@ -414,11 +414,10 @@ h2 button {
   margin: 6px 0;
 }
 .timeline {
-  height: 134px;
   flex: none;
   border-top: 1px solid #626b78;
   background: #2e343e;
-  padding: 8px 12px;
+  padding: 0 12px 8px;
 }
 .timeline-header {
   display: flex;
@@ -442,34 +441,90 @@ h2 button {
 .timeline-header label {
   margin-left: 5px;
 }
-.frames {
-  display: flex;
-  gap: 5px;
-  overflow-x: auto;
-  margin-top: 7px;
-  padding-bottom: 5px;
+.timeline-resizer {
+  height: 7px;
+  cursor: ns-resize;
+  touch-action: none;
+  margin: 0 -12px 3px;
+  border-top: 2px solid #626b78;
 }
-.frames button {
-  width: 66px;
-  height: 78px;
-  flex: none;
+.timeline-resizer:hover,
+.timeline-resizer:focus {
+  background: #526a85;
+}
+.cel-toolbar {
   display: flex;
   align-items: center;
-  flex-direction: column;
-  gap: 3px;
-  padding: 4px;
-  position: relative;
-  background: #252b34;
-  border-color: #4d5867;
+  gap: 7px;
+  height: 32px;
 }
-.frames button.active {
-  background: #3b526c;
-  border-color: #a9c8e8;
+.cel-toolbar span {
+  font-size: 11px;
+  min-width: 150px;
+  color: var(--muted);
+}
+.cel-toolbar small {
+  margin-left: auto;
+  color: var(--muted);
+}
+.cel-scroll {
+  overflow: auto;
+  max-height: 40vh;
+}
+.cel-matrix {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 11px;
+}
+.cel-matrix th,
+.cel-matrix td {
+  padding: 0;
+  border-right: 1px solid #414a57;
+  border-bottom: 1px solid #414a57;
+  min-width: 52px;
+  text-align: center;
+}
+.cel-matrix thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #272d36;
+}
+.cel-matrix .cel-layer-name {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  min-width: 160px;
+  max-width: 160px;
+  background: #2e343e;
+  text-align: left;
+}
+.cel-layer-name button {
+  width: 160px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cel-matrix thead .cel-layer-name {
+  z-index: 3;
+  padding: 6px;
+}
+.cel-matrix thead button {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 52px;
+  height: 59px;
+  padding: 3px;
+  border-radius: 0;
 }
 .frame-thumbnail,
 .frame-placeholder {
-  width: 48px;
-  height: 48px;
+  width: 32px;
+  height: 32px;
   object-fit: contain;
   image-rendering: pixelated;
   background: conic-gradient(
@@ -480,18 +535,47 @@ h2 button {
   );
   background-size: 8px 8px;
 }
-.frames b {
+.cel-matrix thead b {
   position: absolute;
-  top: 5px;
-  left: 5px;
+  top: 2px;
+  left: 3px;
   background: #20252ddd;
   padding: 1px 3px;
   font-size: 9px;
-  font-weight: 500;
 }
-.frames small {
-  font-size: 10px;
-  color: #c6d2e2;
+.cel-matrix thead small {
+  font-size: 9px;
+  font-weight: normal;
+}
+.cel-matrix .cel {
+  display: block;
+  width: 52px;
+  height: 27px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-size: 16px;
+}
+.cel-matrix .current-frame {
+  background: #39495b;
+}
+.cel-matrix .active {
+  background: #536e8c;
+  outline: 1px solid #b2cce8;
+  outline-offset: -1px;
+}
+.cel-matrix .cel:hover {
+  background: #465970;
+}
+.cel-tags span {
+  display: block;
+  max-width: 52px;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 9px;
+  color: #e3b87e;
+  border-top: 2px solid #bc975f;
 }
 footer {
   height: 29px;

@@ -67,3 +67,11 @@ Final ZIP native check: the isolated QA identity was re-signed after changing it
 ## Version 0.4.1
 
 31 Rust tests, 6 official SDK MCP tests, locked build/Clippy, formatting and TypeScript/Vite build passed. Native menus opened the separate file dialog; opening the slime preserved the unsaved editor tab. Rectangle and selection tools exposed only their relevant controls; selection actions were disabled without a region. Attached MCP confirmed two preserved documents and exact original slime content at revision 0. Evidence: native-0.4.1-workspace.json. This is scoped interaction QA, not an exhaustive UI certification.
+
+## 0.4.2 — timeline de cels
+
+Validado em macOS arm64: fmt, Clippy workspace/all-targets/locked com warnings negados, 33 testes Rust (22 core + 11 runtime), build locked; npm ci ignore-scripts e 7 testes SDK MCP, TypeScript/Vite e bundle Tauri. Scanner de design: 0 sinais no código; inspeção nativa confirmou layout da grade.
+
+Documento de QA criado via MCP numa nova janela: dois quadros/duas camadas. Cópia do cel original e colagem no segundo quadro pela GUI resultaram em exatamente uma revisão; MCP confirmou buffers iguais. Command-Z pela GUI e inspeção MCP confirmaram recuperação integral da estrutura/conteúdo inicial. Evidência: `native-0.4.2-timeline.json`. O documento não foi salvo sobre assets do usuário.
+
+Transferência e rejeição de destino ocupado, bloqueios, IDs inválidos, rollback em batch, no-op, undo/redo e cópia independente foram testados no core; descoberta e execução através do SDK MCP também passaram. Drag com modificador, resize por pointer e todos os tamanhos de janela não receberam cobertura interativa exaustiva. Cels vinculados e seleção múltipla continuam pendentes. Bundle local ad-hoc signed/debug, sem notarização ou publicação.

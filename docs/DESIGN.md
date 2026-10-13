@@ -16,3 +16,7 @@ A próxima revisão deve melhorar agrupamento de opções, hierarquia da timelin
 A revisão 0.4.0 manteve controles demais empilhados no mesmo painel. A 0.4.1 muda a estrutura: menu para operações de arquivo/sprite; abas para documentos; barra contextual para a ferramenta ativa; paleta e camadas fixas à direita, com rolagem independente; timeline compacta embaixo; zoom/grade no rodapé. Biblioteca e recuperação são diálogos próprios e não disputam espaço com a edição. Abrir/criar preserva documentos existentes; fechar uma aba alterada pede confirmação e usa revisão esperada.
 
 Referências de fluxo: [workspace do Aseprite](https://www.aseprite.org/docs/workspace/) e [workspace do Photoshop](https://helpx.adobe.com/photoshop/desktop/get-started/learn-the-basics/workspace-overview.html). A implementação, ícones e estilos continuam próprios. Docking livre e layouts persistentes ainda não estão implementados.
+
+## Timeline 0.4.2
+
+Grade de camadas × quadros embaixo do canvas, nomes de camadas fixos à esquerda e cabeçalho de quadros fixo no topo durante a rolagem. Miniaturas representam composição canônica; pontos representam presença de buffers, sem inferir vínculo. A seleção marca a célula e a coluna atual. Ferramentas de cel ficam junto à grade. Altura ajustável evita retirar espaço do canvas em sprites simples e permite expandir projetos com várias camadas.
