@@ -1,0 +1,11 @@
+{
+  "version": "0.4.0",
+  "transport": "SDK MCP -> attached desktop runtime",
+  "gui_action": "clicked automatic recovery entry; restored into new document",
+  "pixel_document_equal": true,
+  "original_slime_unchanged": true,
+  "slime_sha256": "27bb9b56f5d3e23e139796640537f7a7c40aae88b27d67277ca813fe48831830",
+  "restored_dirty": true,
+  "restored_revision": 0,
+  "documents_preserved": 4
+}

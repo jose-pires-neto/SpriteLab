@@ -78,7 +78,7 @@ Request IDs correlate responses today. Durable idempotency requires bounded stor
 
 File commands execute at the runtime's workspace boundary. Read paths are bounded and canonicalized; write paths require existing parents within the root and explicit overwrite. Save/PNG export stages bytes into a sibling temporary file, syncs it, then publishes. No-overwrite uses a hard link to avoid replacing an existing file in a race. Save/export are not undoable document edits. They are not admitted to `command.batch`. Atlas writes one PNG and returns its metadata; the Python example saves that JSON separately. The pair is not promised to be an atomic multi-file export.
 
-Before release, add crash recovery, cross-process ownership, robust directory synchronization/platform handling and a staged multi-artifact publish protocol. Readers/writers of third-party formats report unsupported features instead of silently flattening them.
+Crash recovery checkpoints are implemented in 0.4.0 (ADR 0005). Before release, add cross-process ownership, robust directory synchronization/platform handling and a staged multi-artifact publish protocol. Readers/writers of third-party formats report unsupported features instead of silently flattening them.
 
 ## AssetForge evolution
 

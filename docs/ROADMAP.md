@@ -20,7 +20,7 @@ Before the first public release: human-usable editor, reliable undo/reopen, offl
 
 The current feature matrix is maintained in [COBERTURA.md](COBERTURA.md). Every new feature must be accessible through generated command schemas and actual MCP parity tests.
 
-1. Recover work after a crash; test and harden the newly implemented session document selector and all-document close guard. Measure rendering and memory on representative projects.
+1. Recovery checkpoints delivered in 0.4.0; broaden crash interruption tests and harden the newly implemented session document selector and all-document close guard. Measure rendering and memory on representative projects.
 2. Improve masks, clipboard, irregular selections and transforms; introduce region patches before increasing current resource limits.
 3. Expand the timeline and animation controls with tag selection, loop directions and linked cels.
 4. Add layer groups, blend modes and merge semantics with canonical compositor tests.

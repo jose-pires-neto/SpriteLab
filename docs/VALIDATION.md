@@ -59,3 +59,7 @@ The corrected final bundle was launched as a second isolated QA copy. Clicking t
 The generated app was packaged in a temporary local directory to avoid Finder metadata added to app directories by the workspace file provider. No quarantine attribute was present on this locally built code. The ad-hoc signed ZIP was extracted again into a fresh temporary directory, where `codesign --verify --deep --strict` passed. The launcher repeats this extraction and verification before opening; assets stay in the normal workspace. This is not a Developer ID signature or notarized public release.
 
 Final ZIP native check: the isolated QA identity was re-signed after changing its bundle ID, to keep the test signature valid. The app initialized its workspace. Actual MCP closed the sole empty document; the GUI cleared the canvas/context and disabled asset controls. The native New dialog then created another 32×32 document and restored editing. Closing this empty QA document completed normally. Evidence: `native-0.3.1-empty-mcp.json`.
+
+## Version 0.4.0
+
+31 Rust tests and 6 real SDK MCP tests passed, including recovery across independent runtimes. Formatting, locked workspace Clippy/build and desktop TypeScript/Vite build passed. Native GUI restoration and exact document equality were confirmed through attached MCP; the approved slime file was preserved. See [release record](RELEASE-0.4.0.md) and [native recovery evidence](native-0.4.0-recovery.json). Performance budgets and Windows/Linux remain unverified.

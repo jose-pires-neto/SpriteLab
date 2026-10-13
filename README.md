@@ -6,7 +6,7 @@ SpriteLab is the first specialized editor in the proposed AssetForge open-source
 
 ## What runs today
 
-- Original Rust command engine with 45 discoverable operations and generated JSON Schemas.
+- Original Rust command engine with 49 discoverable operations and generated JSON Schemas.
 - RGBA sprite documents, ordered layers, sparse frame/layer cels, palette metadata and forward animation tags.
 - Pixel strokes/lines, four-connected fill and rectangular buffer patches.
 - Atomic edit batches, monotonic session revisions, expected-revision guards and undo/redo.
@@ -17,7 +17,7 @@ SpriteLab is the first specialized editor in the proposed AssetForge open-source
 
 ## Desktop (macOS arm64)
 
-The delivered `outputs/SpriteLab-0.3.1-macOS-arm64.zip` contains the desktop app. Double-click `outputs/Abrir SpriteLab.command` to extract and open a verified local copy; no development server or npm installation is needed. Projects live in `~/Documents/ChatGPT/SpriteLab/assets`; the app installs an original example project there on first launch. Add existing `.spritelab` or `.png` files to that folder to open/import them from the sidebar. Each desktop process owns a runtime; CLI/MCP can explicitly attach to its private local Unix session.
+The delivered `outputs/SpriteLab-0.4.0-macOS-arm64.zip` contains the desktop app. Double-click `outputs/Abrir SpriteLab.command` to extract and open a verified local copy; no development server or npm installation is needed. Projects live in `~/Documents/ChatGPT/SpriteLab/assets`; the app installs an original example project there on first launch. Add existing `.spritelab` or `.png` files to that folder to open/import them from the sidebar. Each desktop process owns a runtime; CLI/MCP can explicitly attach to its private local Unix session.
 
 B/E/L/F/I select pencil/eraser/line/fill/eyedropper, Escape discards a pending stroke, Space toggles playback, Command-Z undoes, Command-Shift-Z redoes, Command-S saves. A duplicate/new frame is selected automatically. Save preserves layers/frames; PNG exports the current frame and spritesheet exports all frames in one row. This is a local debug prototype, locally ad-hoc signed; not a Developer ID signed/notarized public release. See [Portuguese usage guide](docs/COMO-USAR.md).
 
@@ -107,6 +107,10 @@ Mask/lasso selections, dedicated pan tool, advanced onion controls, indexed-colo
 
 Dimensions are limited to 512×512, 32 layers, 64 frames, 256 palette entries, 64 tags and 524,288 allocated cel pixels per document. A session supports four open documents; `document.close` releases one without auto-saving. Edits are serialized by the current process. History retains up to 32 entries and a conservative 32 MiB pixel estimate per document. This is copy-on-write snapshot history, not production tile-patch history.
 
-Input lines/files are limited to 16 MiB; atlases to 4,194,304 pixels. Long-running jobs, cancellation, crash recovery, durable idempotency and multi-process locking are future work. File replacement uses a same-directory temporary file with file sync; filesystem policy is application-level and does not promise confinement against concurrent hostile symlink changes. No power-loss durability claim is made for directory metadata.
+Input lines/files are limited to 16 MiB; atlases to 4,194,304 pixels. Long-running jobs, cancellation, durable idempotency and multi-process locking are future work. File replacement uses a same-directory temporary file with file sync; filesystem policy is application-level and does not promise confinement against concurrent hostile symlink changes. No power-loss durability claim is made for directory metadata.
 
 MIT applies to original SpriteLab code. Aseprite is a research reference, not a dependency, and no Aseprite implementation or artwork is included. Nothing has been published to GitHub or packaged as a public release.
+
+## Version 0.4.0
+
+Desktop recovery checkpoints all dirty documents every 15 seconds. Open a checkpoint from the Recuperação panel to restore it into a new unsaved document. Originals are never replaced. The same recovery commands are available through MCP and CLI; headless automation requests checkpoints explicitly. See [release notes](CHANGELOG.md) and [recovery contract](docs/adr/0005-recovery-snapshots.md). The last 15 seconds, undo history and viewport are not covered.

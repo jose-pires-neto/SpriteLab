@@ -23,3 +23,7 @@ Se a janela 0.3 já estiver aberta, salve seu projeto e feche-a antes de abrir 0
 Dois servidores foram registrados no Codex: `spritelab_live` controla a sessão da janela aberta; `spritelab_headless` inicia uma sessão independente para scripts/lotes. Abra o SpriteLab antes de reconectar o servidor live. Recarregue os MCPs ou reinicie o Codex para carregar a nova configuração.
 
 O seletor no topo permite trocar entre documentos da sessão, inclusive os abertos pelo MCP. Um ponto marca alterações não salvas; ao fechar, o editor verifica todos os documentos da sessão.
+
+## Recuperação (0.4.0)
+
+O aplicativo cria uma cópia independente dos documentos alterados a cada 15 segundos, incluindo edições por agentes conectados. No painel Recuperação, clique na cópia desejada para abrir um novo documento e salve com o nome escolhido. Restaurar não substitui o documento original. O botão × descarta somente a cópia selecionada, com confirmação. Erros de armazenamento aparecem no painel. A recuperação não guarda undo nem viewport e pode perder os últimos 15 segundos em um encerramento abrupto.

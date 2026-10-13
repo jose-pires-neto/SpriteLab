@@ -1,4 +1,4 @@
-# Cobertura funcional — SpriteLab 0.3.1
+# Cobertura funcional — SpriteLab 0.4.0
 
 Referência de produto: [recursos publicados do Aseprite](https://www.aseprite.org/) e [documentação](https://www.aseprite.org/docs/), consultados em 13/10/2026. Esta matriz registra o estado real do SpriteLab; não declara equivalência integral, compatibilidade de arquivos ou superioridade de desempenho.
 
@@ -11,8 +11,8 @@ Referência de produto: [recursos publicados do Aseprite](https://www.aseprite.o
 | Cor | RGBA, alpha, conta-gotas, metadados de paleta editáveis pelo catálogo/MCP | Modo indexed/grayscale, perfis de cor, editor avançado de paleta |
 | Arquivos | Projeto editável JSON, PNG import/export, atlas PNG e metadados via comando, GIF animado | Importação/exportação .aseprite, APNG, sequências PNG, atlas empacotado/trim, templates de engines |
 | Navegação | Zoom, scroll do canvas, grade, ferramentas por teclado, painel de comandos/schemas e seletor de documentos da sessão | Pan com ferramenta dedicada, atalhos customizáveis, layouts e abas com previews |
-| Automação | 45 comandos descobertos em Rust; CLI JSONL, Python e MCP; sessão desktop compartilhada; view/contexto também expostos | Jobs com progresso/cancelamento, eventos/subscriptions, retries com idempotência durável |
-| Robustez | Revisões, operações atômicas, undo/redo, limites de recursos, arquivos escritos atomicamente, estado salvo por documento, proteção no fechamento, paridade testada | Auto-save/recovery, histórico por tiles, documentos muito grandes, testes Windows/Linux e distribuição assinada |
+| Automação | 49 comandos descobertos em Rust; CLI JSONL, Python e MCP; sessão desktop compartilhada; view/contexto também expostos | Jobs com progresso/cancelamento, eventos/subscriptions, retries com idempotência durável |
+| Robustez | Revisões, operações atômicas, undo/redo, limites de recursos, arquivos escritos atomicamente, estado salvo por documento, checkpoints de recuperação a cada 15 s, proteção no fechamento, paridade testada | Histórico por tiles, documentos muito grandes, testes Windows/Linux e distribuição assinada |
 | Tilemaps e slices | Não implementado | Tilemap/tilesets, slice/nine-patch, tiled preview |
 | Extensões | Contratos e catálogo preparados | SDK público versionado, plugins isolados, catálogo/gerenciamento de assets e domínio 3D |
 
@@ -22,7 +22,7 @@ Limites atuais: 512×512, 32 camadas, 64 frames, 4 documentos por sessão, 524.2
 
 ## Próxima sequência de implementação
 
-1. Recuperação/autosave e histórico de regiões; garantir orçamento de memória em projetos representativos.
+1. Ampliar testes de recuperação e implementar histórico de regiões; garantir orçamento de memória em projetos representativos.
 2. Blend modes, merge/grupos, cels explícitos e semântica de vinculação.
 3. Seleções por máscaras, clipboard, transformações adicionais e pincéis personalizados.
 4. Modo indexed/perfis, tilemap, slices e tiled preview.
