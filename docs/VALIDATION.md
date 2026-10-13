@@ -63,3 +63,7 @@ Final ZIP native check: the isolated QA identity was re-signed after changing it
 ## Version 0.4.0
 
 31 Rust tests and 6 real SDK MCP tests passed, including recovery across independent runtimes. Formatting, locked workspace Clippy/build and desktop TypeScript/Vite build passed. Native GUI restoration and exact document equality were confirmed through attached MCP; the approved slime file was preserved. See [release record](RELEASE-0.4.0.md) and [native recovery evidence](native-0.4.0-recovery.json). Performance budgets and Windows/Linux remain unverified.
+
+## Version 0.4.1
+
+31 Rust tests, 6 official SDK MCP tests, locked build/Clippy, formatting and TypeScript/Vite build passed. Native menus opened the separate file dialog; opening the slime preserved the unsaved editor tab. Rectangle and selection tools exposed only their relevant controls; selection actions were disabled without a region. Attached MCP confirmed two preserved documents and exact original slime content at revision 0. Evidence: native-0.4.1-workspace.json. This is scoped interaction QA, not an exhaustive UI certification.

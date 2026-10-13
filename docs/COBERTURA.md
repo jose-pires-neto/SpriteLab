@@ -1,4 +1,4 @@
-# Cobertura funcional — SpriteLab 0.4.0
+# Cobertura funcional — SpriteLab 0.4.1
 
 Referência de produto: [recursos publicados do Aseprite](https://www.aseprite.org/) e [documentação](https://www.aseprite.org/docs/), consultados em 13/10/2026. Esta matriz registra o estado real do SpriteLab; não declara equivalência integral, compatibilidade de arquivos ou superioridade de desempenho.
 
@@ -10,7 +10,7 @@ Referência de produto: [recursos publicados do Aseprite](https://www.aseprite.o
 | Animação | Criar/duplicar/ordenar/excluir frames, duração, reprodução, tags, onion skin anterior/posterior com cores distintas | Cels ligados como recurso de edição, faixas de tags na UI, reverse/ping-pong, preview separado, drag/drop |
 | Cor | RGBA, alpha, conta-gotas, metadados de paleta editáveis pelo catálogo/MCP | Modo indexed/grayscale, perfis de cor, editor avançado de paleta |
 | Arquivos | Projeto editável JSON, PNG import/export, atlas PNG e metadados via comando, GIF animado | Importação/exportação .aseprite, APNG, sequências PNG, atlas empacotado/trim, templates de engines |
-| Navegação | Zoom, scroll do canvas, grade, ferramentas por teclado, painel de comandos/schemas e seletor de documentos da sessão | Pan com ferramenta dedicada, atalhos customizáveis, layouts e abas com previews |
+| Navegação | Zoom, scroll do canvas, grade, ferramentas por teclado, painel de comandos/schemas, abas de documentos e opções contextuais | Pan com ferramenta dedicada, atalhos customizáveis, layouts e abas com previews |
 | Automação | 49 comandos descobertos em Rust; CLI JSONL, Python e MCP; sessão desktop compartilhada; view/contexto também expostos | Jobs com progresso/cancelamento, eventos/subscriptions, retries com idempotência durável |
 | Robustez | Revisões, operações atômicas, undo/redo, limites de recursos, arquivos escritos atomicamente, estado salvo por documento, checkpoints de recuperação a cada 15 s, proteção no fechamento, paridade testada | Histórico por tiles, documentos muito grandes, testes Windows/Linux e distribuição assinada |
 | Tilemaps e slices | Não implementado | Tilemap/tilesets, slice/nine-patch, tiled preview |

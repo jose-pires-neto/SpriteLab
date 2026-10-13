@@ -2909,7 +2909,7 @@ dependencies = [
 
 [[package]]
 name = "spritelab-desktop"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "assetforge-command",
  "serde",

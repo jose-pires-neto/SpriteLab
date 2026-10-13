@@ -1,0 +1,22 @@
+{
+  "version": "0.4.1",
+  "opened_by_gui": true,
+  "tabs_preserved": [
+    {
+      "dirty": true,
+      "document_id": "editor",
+      "path": null,
+      "revision": 0
+    },
+    {
+      "dirty": false,
+      "document_id": "editor-1",
+      "path": "Slime-Menta.spritelab",
+      "revision": 0
+    }
+  ],
+  "active_document": "editor-1",
+  "slime_content_equal": true,
+  "revision": 0,
+  "contextual_tool": "select"
+}

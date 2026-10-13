@@ -17,7 +17,7 @@ SpriteLab is the first specialized editor in the proposed AssetForge open-source
 
 ## Desktop (macOS arm64)
 
-The delivered `outputs/SpriteLab-0.4.0-macOS-arm64.zip` contains the desktop app. Double-click `outputs/Abrir SpriteLab.command` to extract and open a verified local copy; no development server or npm installation is needed. Projects live in `~/Documents/ChatGPT/SpriteLab/assets`; the app installs an original example project there on first launch. Add existing `.spritelab` or `.png` files to that folder to open/import them from the sidebar. Each desktop process owns a runtime; CLI/MCP can explicitly attach to its private local Unix session.
+The delivered `outputs/SpriteLab-0.4.1-macOS-arm64.zip` contains the desktop app. Double-click `outputs/Abrir SpriteLab.command` to extract and open a verified local copy; no development server or npm installation is needed. Projects live in `~/Documents/ChatGPT/SpriteLab/assets`; the app installs an original example project there on first launch. Add existing `.spritelab` or `.png` files to that folder to open/import them from the sidebar. Each desktop process owns a runtime; CLI/MCP can explicitly attach to its private local Unix session.
 
 B/E/L/F/I select pencil/eraser/line/fill/eyedropper, Escape discards a pending stroke, Space toggles playback, Command-Z undoes, Command-Shift-Z redoes, Command-S saves. A duplicate/new frame is selected automatically. Save preserves layers/frames; PNG exports the current frame and spritesheet exports all frames in one row. This is a local debug prototype, locally ad-hoc signed; not a Developer ID signed/notarized public release. See [Portuguese usage guide](docs/COMO-USAR.md).
 
@@ -114,3 +114,7 @@ MIT applies to original SpriteLab code. Aseprite is a research reference, not a 
 ## Version 0.4.0
 
 Desktop recovery checkpoints all dirty documents every 15 seconds. Open a checkpoint from the Recuperação panel to restore it into a new unsaved document. Originals are never replaced. The same recovery commands are available through MCP and CLI; headless automation requests checkpoints explicitly. See [release notes](CHANGELOG.md) and [recovery contract](docs/adr/0005-recovery-snapshots.md). The last 15 seconds, undo history and viewport are not covered.
+
+## Workspace 0.4.1
+
+File operations live in Arquivo; sprite sizing lives in Sprite. Documents have tabs and opening another file preserves existing work. The context bar follows the active tool; only palette and layers remain in the right dock. Zoom/grid are in the status bar, onion skin is in the timeline. Recovery and file browsing use separate dialogs. Free docking is not implemented.

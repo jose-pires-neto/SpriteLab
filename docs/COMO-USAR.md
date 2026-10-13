@@ -27,3 +27,7 @@ O seletor no topo permite trocar entre documentos da sessão, inclusive os abert
 ## Recuperação (0.4.0)
 
 O aplicativo cria uma cópia independente dos documentos alterados a cada 15 segundos, incluindo edições por agentes conectados. No painel Recuperação, clique na cópia desejada para abrir um novo documento e salve com o nome escolhido. Restaurar não substitui o documento original. O botão × descarta somente a cópia selecionada, com confirmação. Erros de armazenamento aparecem no painel. A recuperação não guarda undo nem viewport e pode perder os últimos 15 segundos em um encerramento abrupto.
+
+## Organização da interface (0.4.1)
+
+Use Arquivo para criar, abrir/importar, salvar, exportar e recuperar trabalho. Os documentos abertos aparecem em abas; o botão × fecha a aba, com confirmação quando existem alterações. Paleta e camadas ficam fixas à direita. A barra no topo acompanha a ferramenta selecionada. Redimensionamento fica no menu Sprite, zoom e grade no rodapé, e onion skin junto à animação. Inspecionar comandos fica no menu Automação. O limite de quatro documentos por sessão continua vigente.

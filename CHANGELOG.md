@@ -1,5 +1,13 @@
 # Histórico de versões
 
+## 0.4.1 — 13/10/2026
+
+- Reorganização do workspace: paleta e camadas fixas à direita, com rolagem independente.
+- Menus Arquivo, Editar, Sprite e Automação; biblioteca/recuperação em diálogos separados.
+- Abas de documentos: abrir/criar preserva os existentes; fechamento de documento alterado exige confirmação e revisão válida.
+- Barra contextual: pincel/alpha/simetria para desenho, preenchimento para formas, ações de região para seleção. Controles sem seleção ficam desabilitados.
+- Zoom e grade no rodapé, onion skin na timeline e maior área de canvas.
+
 ## 0.4.0 — 13/10/2026
 
 - Recuperação automática a cada 15 segundos de todos os documentos alterados na sessão desktop, incluindo alterações via MCP.
