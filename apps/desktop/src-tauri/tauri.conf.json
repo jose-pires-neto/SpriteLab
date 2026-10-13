@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "SpriteLab",
+  "version": "0.3.1",
+  "identifier": "org.assetforge.spritelab.preview3",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
+    "devUrl": "http://127.0.0.1:1420",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "SpriteLab",
+        "width": 1280,
+        "height": 860,
+        "minWidth": 1000,
+        "minHeight": 700
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; connect-src ipc: http://ipc.localhost; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "app"
+    ],
+    "category": "GraphicsAndDesign",
+    "shortDescription": "Command-first pixel art and animation studio",
+    "icon": [
+      "icons/icon.icns",
+      "icons/icon.png"
+    ],
+    "resources": {
+      "../../../docs/DISTRIBUTION-LICENSES.txt": "DISTRIBUTION-LICENSES.txt"
+    }
+  }
+}

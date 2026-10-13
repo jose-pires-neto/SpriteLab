@@ -1,0 +1,203 @@
+{
+  "discovery": {
+    "pid": 21103,
+    "protocol_version": 1,
+    "socket": "/var/folders/z0/37xbxsfn4_v9cmjdp10683pm0000gn/T/sl-21103-18de1e1a05cd7ce0.sock",
+    "workspace": "/Users/josepires/Documents/ChatGPT/SpriteLab/assets"
+  },
+  "records": [
+    {
+      "command": "document.list",
+      "protocol_version": 1,
+      "request_id": "ab7b0fe3-0192-4ca8-b277-88a293355956",
+      "ok": true,
+      "revision": null,
+      "result": {
+        "documents": [
+          {
+            "dirty": true,
+            "document_id": "editor",
+            "path": null,
+            "revision": 0
+          }
+        ]
+      }
+    },
+    {
+      "command": "document.create",
+      "protocol_version": 1,
+      "request_id": "55c21b2b-de4c-494f-902a-a807f0b81787",
+      "ok": true,
+      "revision": 0,
+      "result": {
+        "document_id": "native-qa31",
+        "revision": 0
+      }
+    },
+    {
+      "command": "canvas.rectangle",
+      "protocol_version": 1,
+      "request_id": "0ac1d987-0dc7-42ac-bef5-b4f78642ff53",
+      "ok": true,
+      "revision": 1,
+      "result": {
+        "changed": true,
+        "results": [
+          {
+            "pixels": 36
+          }
+        ]
+      }
+    },
+    {
+      "command": "frame.add",
+      "protocol_version": 1,
+      "request_id": "e905a940-b87a-4a4d-a573-531a29990489",
+      "ok": true,
+      "revision": 2,
+      "result": {
+        "changed": true,
+        "results": [
+          {
+            "frame_id": 3
+          }
+        ]
+      }
+    },
+    {
+      "command": "editor.configure",
+      "protocol_version": 1,
+      "request_id": "b0ce1479-fbea-429a-8042-2cad5a61b02a",
+      "ok": true,
+      "revision": null,
+      "result": {
+        "view": {
+          "alpha": 143,
+          "brush_size": 1,
+          "color": [
+            12,
+            34,
+            56,
+            143
+          ],
+          "document_id": "native-qa31",
+          "filled": true,
+          "frame_id": 2,
+          "grid": true,
+          "layer_id": 1,
+          "mirror_x": false,
+          "mirror_y": false,
+          "onion_skin": true,
+          "pixel_perfect": false,
+          "playback": false,
+          "selection": null,
+          "tool": "ellipse",
+          "zoom": 24
+        }
+      }
+    },
+    {
+      "command": "document.save",
+      "protocol_version": 1,
+      "request_id": "2244a1f5-69f0-486c-9ae5-105994de6443",
+      "ok": true,
+      "revision": 2,
+      "result": {
+        "format_version": 1,
+        "path": "native-qa31.spritelab"
+      }
+    },
+    {
+      "command": "export.png",
+      "protocol_version": 1,
+      "request_id": "a5a3bd73-86b1-4b2c-a7c0-1cd5b5e787e5",
+      "ok": true,
+      "revision": 2,
+      "result": {
+        "height": 8,
+        "path": "native-qa31.png",
+        "width": 8
+      }
+    },
+    {
+      "command": "export.gif",
+      "protocol_version": 1,
+      "request_id": "72383f8e-6d80-4dab-abef-ed6169dde749",
+      "ok": true,
+      "revision": 2,
+      "result": {
+        "frames": 2,
+        "palette_limit": 256,
+        "partial_alpha_thresholded": false,
+        "path": "native-qa31.gif",
+        "timing_unit_ms": 10
+      }
+    },
+    {
+      "command": "document.create",
+      "protocol_version": 1,
+      "request_id": "5036acc2-9bf7-4d1f-bf5b-0c4257be7c94",
+      "ok": true,
+      "revision": 0,
+      "result": {
+        "document_id": "native-inactive31",
+        "revision": 0
+      }
+    },
+    {
+      "command": "editor.inspect",
+      "protocol_version": 1,
+      "request_id": "9fa53cf2-fd3c-43e6-b44e-4d6f5c7facd2",
+      "ok": true,
+      "revision": null,
+      "result": {
+        "dirty": false,
+        "document_path": "native-qa31.spritelab",
+        "document_revision": 2,
+        "documents": [
+          {
+            "dirty": true,
+            "document_id": "editor",
+            "path": null,
+            "revision": 0
+          },
+          {
+            "dirty": true,
+            "document_id": "native-inactive31",
+            "path": null,
+            "revision": 0
+          },
+          {
+            "dirty": false,
+            "document_id": "native-qa31",
+            "path": "native-qa31.spritelab",
+            "revision": 2
+          }
+        ],
+        "view": {
+          "alpha": 143,
+          "brush_size": 1,
+          "color": [
+            12,
+            34,
+            56,
+            143
+          ],
+          "document_id": "native-qa31",
+          "filled": true,
+          "frame_id": 2,
+          "grid": true,
+          "layer_id": 1,
+          "mirror_x": false,
+          "mirror_y": false,
+          "onion_skin": true,
+          "pixel_perfect": false,
+          "playback": false,
+          "selection": null,
+          "tool": "ellipse",
+          "zoom": 24
+        }
+      }
+    }
+  ]
+}

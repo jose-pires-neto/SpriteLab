@@ -1,0 +1,12 @@
+/target/
+**/node_modules/
+*.tmp
+__pycache__/
+.DS_Store
+
+apps/desktop/dist/
+apps/desktop/src-tauri/gen/
+
+/work/
+/assets/
+/outputs/

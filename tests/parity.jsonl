@@ -1,0 +1,39 @@
+{"request_id": "parity-0", "document_id": "parity", "command": "document.create", "args": {"width": 8, "height": 8}}
+{"request_id": "parity-1", "document_id": "parity", "command": "layer.create", "args": {"name": "Character"}}
+{"request_id": "parity-2", "document_id": "parity", "command": "palette.set", "args": {"colors": [[0, 0, 0, 0], [255, 32, 64, 255]]}}
+{"request_id": "parity-3", "document_id": "parity", "command": "canvas.stroke", "args": {"layer_id": 3, "frame_id": 2, "points": [[1, 1], [5, 1], [5, 5]], "color": [255, 32, 64, 255]}}
+{"request_id": "parity-4", "document_id": "parity", "command": "canvas.fill", "args": {"layer_id": 1, "frame_id": 2, "at": [0, 0], "color": [32, 40, 48, 255]}}
+{"request_id": "parity-5", "document_id": "parity", "command": "frame.add", "args": {"source_frame_id": 2, "duration_ms": 160}}
+{"request_id": "parity-6", "document_id": "parity", "command": "canvas.patch", "args": {"layer_id": 3, "frame_id": 4, "x": 2, "y": 2, "width": 2, "height": 1, "pixels": [[255, 255, 0, 255], [0, 0, 0, 0]]}}
+{"request_id": "parity-7", "document_id": "parity", "command": "animation.tag", "args": {"name": "idle", "from_frame": 2, "to_frame": 4}}
+{"request_id": "parity-8", "document_id": "parity", "command": "command.batch", "args": {"commands": [{"command": "layer.update", "args": {"layer_id": 3, "opacity": 128}}, {"command": "frame.duration", "args": {"frame_id": 4, "duration_ms": 200}}]}}
+{"request_id": "parity-9", "document_id": "parity", "command": "history.undo", "args": {}}
+{"request_id": "parity-10", "document_id": "parity", "command": "history.redo", "args": {}}
+{"request_id": "parity-11", "document_id": "parity", "command": "document.inspect", "args": {}}
+{"request_id": "parity-12", "document_id": "parity", "command": "document.render", "args": {"frame_id": 4}}
+{"request_id": "parity-13", "document_id": "parity", "command": "canvas.line", "args": {"layer_id": 3, "frame_id": 4, "from": [0, 0], "to": [999, 0], "color": [1, 2, 3, 255]}}
+{"request_id": "parity-14", "document_id": "parity", "command": "document.inspect", "args": {}}
+{"request_id": "parity-15", "document_id": "parity", "command": "document.save", "args": {"path": "parity.spritelab", "overwrite": true}}
+{"request_id": "parity-16", "document_id": "parity", "command": "export.png", "args": {"path": "parity.png", "frame_id": 4, "overwrite": true}}
+{"request_id": "parity-17", "document_id": "parity", "command": "export.spritesheet", "args": {"path": "parity-atlas.png", "columns": 2, "padding": 1, "overwrite": true}}
+{"request_id": "parity-preview", "document_id": "parity", "command": "command.preview", "args": {"frame_id": 4, "edit": {"command": "canvas.stroke", "args": {"frame_id": 4, "layer_id": 3, "points": [[0, 0], [7, 7]], "color": [22, 33, 44, 255]}}}}
+{"request_id": "extended-0", "document_id": "parity", "command": "editor.configure", "args": {"document_id": "parity", "frame_id": 4, "layer_id": 3, "tool": "rectangle", "grid": true, "onion_skin": true, "brush_size": 3}}
+{"request_id": "extended-1", "document_id": "parity", "command": "editor.inspect", "args": {}}
+{"request_id": "extended-2", "document_id": "parity", "command": "canvas.rectangle", "args": {"layer_id": 3, "frame_id": 4, "rect": {"x": 0, "y": 0, "width": 4, "height": 3}, "filled": true, "color": [8, 9, 10, 255]}}
+{"request_id": "extended-3", "document_id": "parity", "command": "canvas.ellipse", "args": {"layer_id": 3, "frame_id": 4, "rect": {"x": 4, "y": 4, "width": 3, "height": 3}, "color": [11, 12, 13, 255]}}
+{"request_id": "extended-4", "document_id": "parity", "command": "canvas.stroke", "args": {"layer_id": 3, "frame_id": 4, "points": [[1, 1], [2, 1], [2, 2]], "color": [255, 99, 88, 128], "size": 2, "mirror_x": true, "mirror_y": true, "pixel_perfect": true}}
+{"request_id": "extended-5", "document_id": "parity", "command": "canvas.transform", "args": {"layer_id": 3, "frame_id": 4, "rect": {"x": 0, "y": 0, "width": 3, "height": 3}, "operation": "flip_x"}}
+{"request_id": "extended-6", "document_id": "parity", "command": "canvas.transform", "args": {"layer_id": 3, "frame_id": 4, "rect": {"x": 0, "y": 0, "width": 3, "height": 3}, "operation": "move", "dx": 1, "dy": 1}}
+{"request_id": "extended-7", "document_id": "parity", "command": "canvas.replace_color", "args": {"layer_id": 3, "frame_id": 4, "from": [8, 9, 10, 255], "to": [22, 33, 44, 255]}}
+{"request_id": "extended-8", "document_id": "parity", "command": "layer.duplicate", "args": {"layer_id": 3, "name": "Duplicate"}}
+{"request_id": "extended-9", "document_id": "parity", "command": "layer.reorder", "args": {"layer_id": 5, "index": 0}}
+{"request_id": "extended-10", "document_id": "parity", "command": "frame.reorder", "args": {"frame_id": 4, "index": 0}}
+{"request_id": "extended-11", "document_id": "parity", "command": "frame.remove", "args": {"frame_id": 2}}
+{"request_id": "extended-12", "document_id": "parity", "command": "document.resize", "args": {"width": 6, "height": 6}}
+{"request_id": "extended-13", "document_id": "parity", "command": "document.canvas_size", "args": {"width": 8, "height": 8, "offset_x": 1, "offset_y": 1}}
+{"request_id": "extended-14", "document_id": "parity", "command": "document.snapshot", "args": {"frame_id": 4}}
+{"request_id": "extended-15", "document_id": "parity", "command": "document.onion", "args": {"frame_id": 4}}
+{"request_id": "extended-16", "document_id": "parity", "command": "export.gif", "args": {"path": "parity.gif", "overwrite": true}}
+{"request_id": "extended-17", "document_id": "parity", "command": "animation.tag_remove", "args": {"name": "idle"}}
+{"request_id": "extended-18", "document_id": "parity", "command": "cel.clear", "args": {"layer_id": 5, "frame_id": 4}}
+{"request_id": "extended-19", "document_id": "parity", "command": "editor.inspect", "args": {}}

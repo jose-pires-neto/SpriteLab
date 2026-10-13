@@ -1,0 +1,60 @@
+[
+  {
+    "file": "rea-aseprite-help.json",
+    "evidence_id": null,
+    "operation": null,
+    "subject": null,
+    "status": "failed_with_partial_observation",
+    "limitations": [],
+    "code": "cleanup_incomplete"
+  },
+  {
+    "file": "rea-aseprite-version.json",
+    "evidence_id": "ev_d21525e9acf7dda09e0fff355da383db2e467c58c6c47dfa46c5908115f80f6b",
+    "operation": "capture_process_scenario",
+    "subject": null,
+    "status": "complete_record",
+    "limitations": [
+      "Artifact identity is unavailable for this observation.",
+      "The executable digest is a prelaunch file sample; matching path metadata immediately after spawn does not prove an atomic operating-system image binding.",
+      "Process trees are sampled and may omit short-lived descendants.",
+      "Filesystem observations are before/after snapshots, not syscall traces.",
+      "Inherited host environment variables are not recorded and may affect results.",
+      "No filesystem observation paths were selected; filesystem effects remain unknown."
+    ]
+  },
+  {
+    "file": "rea-aseprite-bundle.json",
+    "evidence_id": "ev_334e08a4a2bb10872fffc86421d06040059b2b8043e4169a60c1a9cf0efec337",
+    "operation": "inspect_artifact",
+    "subject": {
+      "name": "Aseprite.app",
+      "digest": {
+        "sha256": "fd088e4a8fae306ac244cf342c83a87f1ec04c787671c20278e5db54a20591fe"
+      },
+      "format": "directory",
+      "architecture": null,
+      "local_path": "/Users/josepires/Documents/Codex/2026-10-13/vam/work/aseprite-mount/Aseprite.app"
+    },
+    "status": "complete_record",
+    "limitations": [
+      "Inspection derives bounded static hypotheses and next probes; it does not execute the artifact or claim format-specific semantics."
+    ]
+  },
+  {
+    "file": "rea-aseprite-plist.json",
+    "evidence_id": "ev_2c3af6a9171c18c7726f96634a05fe595f264929b72f5eaff4406fbc3cabecb5",
+    "operation": "inspect_plist",
+    "subject": {
+      "name": "aseprite",
+      "digest": {
+        "sha256": "7d427b9022f9934df7f02e4af62daff7ee8893960e5af0fb43ce23fe5416b440"
+      },
+      "format": "mach-o",
+      "architecture": "arm64",
+      "local_path": "/Users/josepires/Documents/Codex/2026-10-13/vam/work/aseprite-mount/Aseprite.app/Contents/MacOS/aseprite"
+    },
+    "status": "complete_record",
+    "limitations": []
+  }
+]

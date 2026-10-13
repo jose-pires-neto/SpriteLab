@@ -1,0 +1,4571 @@
+[
+  {
+    "id": "document.create",
+    "summary": "Create a bounded RGBA sprite",
+    "effect": "lifecycle",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "height": {
+          "format": "uint32",
+          "maximum": 512.0,
+          "minimum": 1.0,
+          "type": "integer"
+        },
+        "width": {
+          "format": "uint32",
+          "maximum": 512.0,
+          "minimum": 1.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "height",
+        "width"
+      ],
+      "title": "Create",
+      "type": "object"
+    }
+  },
+  {
+    "id": "document.inspect",
+    "summary": "Read authoritative document content",
+    "effect": "query",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "title": "Empty",
+      "type": "object"
+    }
+  },
+  {
+    "id": "document.list",
+    "summary": "List current session documents",
+    "effect": "query",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "title": "Empty",
+      "type": "object"
+    }
+  },
+  {
+    "id": "document.close",
+    "summary": "Release a document session and its unsaved history",
+    "effect": "lifecycle",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "title": "Empty",
+      "type": "object"
+    }
+  },
+  {
+    "id": "command.list",
+    "summary": "Discover authoritative command schemas",
+    "effect": "query",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "title": "Empty",
+      "type": "object"
+    }
+  },
+  {
+    "id": "document.render",
+    "summary": "Read composited frame RGBA bytes",
+    "effect": "query",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "frame_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "frame_id"
+      ],
+      "title": "Render",
+      "type": "object"
+    }
+  },
+  {
+    "id": "document.onion",
+    "summary": "Render tinted adjacent frames for the editor overlay",
+    "effect": "query",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "frame_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "frame_id"
+      ],
+      "title": "Render",
+      "type": "object"
+    }
+  },
+  {
+    "id": "document.snapshot",
+    "summary": "Read document and canonical frame atomically",
+    "effect": "query",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "frame_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "frame_id"
+      ],
+      "title": "Render",
+      "type": "object"
+    }
+  },
+  {
+    "id": "command.preview",
+    "summary": "Render a detached edit without committing history or IDs",
+    "effect": "query",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "definitions": {
+        "Edit": {
+          "oneOf": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "layer.create"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "locked": {
+                      "type": [
+                        "boolean",
+                        "null"
+                      ]
+                    },
+                    "name": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "opacity": {
+                      "format": "uint8",
+                      "minimum": 0.0,
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "visible": {
+                      "type": [
+                        "boolean",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "layer_id"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "layer.update"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "layer_id"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "layer.remove"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "duration_ms": {
+                      "format": "uint32",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "source_frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "duration_ms"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "frame.add"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "duration_ms": {
+                      "format": "uint32",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "duration_ms",
+                    "frame_id"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "frame.duration"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "colors": {
+                      "items": {
+                        "items": {
+                          "format": "uint8",
+                          "minimum": 0.0,
+                          "type": "integer"
+                        },
+                        "maxItems": 4,
+                        "minItems": 4,
+                        "type": "array"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "colors"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "palette.set"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "color": {
+                      "items": {
+                        "format": "uint8",
+                        "minimum": 0.0,
+                        "type": "integer"
+                      },
+                      "maxItems": 4,
+                      "minItems": 4,
+                      "type": "array"
+                    },
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "mirror_x": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "mirror_y": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "pixel_perfect": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "points": {
+                      "items": {
+                        "items": {
+                          "format": "int32",
+                          "type": "integer"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2,
+                        "type": "array"
+                      },
+                      "type": "array"
+                    },
+                    "size": {
+                      "default": 1,
+                      "format": "uint32",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "color",
+                    "frame_id",
+                    "layer_id",
+                    "points"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "canvas.stroke"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "color": {
+                      "items": {
+                        "format": "uint8",
+                        "minimum": 0.0,
+                        "type": "integer"
+                      },
+                      "maxItems": 4,
+                      "minItems": 4,
+                      "type": "array"
+                    },
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "from": {
+                      "items": {
+                        "format": "int32",
+                        "type": "integer"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2,
+                      "type": "array"
+                    },
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "to": {
+                      "items": {
+                        "format": "int32",
+                        "type": "integer"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2,
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "color",
+                    "frame_id",
+                    "from",
+                    "layer_id",
+                    "to"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "canvas.line"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "at": {
+                      "items": {
+                        "format": "int32",
+                        "type": "integer"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2,
+                      "type": "array"
+                    },
+                    "color": {
+                      "items": {
+                        "format": "uint8",
+                        "minimum": 0.0,
+                        "type": "integer"
+                      },
+                      "maxItems": 4,
+                      "minItems": 4,
+                      "type": "array"
+                    },
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "at",
+                    "color",
+                    "frame_id",
+                    "layer_id"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "canvas.fill"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "height": {
+                      "format": "uint32",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "pixels": {
+                      "items": {
+                        "items": {
+                          "format": "uint8",
+                          "minimum": 0.0,
+                          "type": "integer"
+                        },
+                        "maxItems": 4,
+                        "minItems": 4,
+                        "type": "array"
+                      },
+                      "type": "array"
+                    },
+                    "width": {
+                      "format": "uint32",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "x": {
+                      "format": "int32",
+                      "type": "integer"
+                    },
+                    "y": {
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "frame_id",
+                    "height",
+                    "layer_id",
+                    "pixels",
+                    "width",
+                    "x",
+                    "y"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "canvas.patch"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "index": {
+                      "format": "uint",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "index",
+                    "layer_id"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "layer.reorder"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "layer_id",
+                    "name"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "layer.duplicate"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "frame_id"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "frame.remove"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "index": {
+                      "format": "uint",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "frame_id",
+                    "index"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "frame.reorder"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "frame_id",
+                    "layer_id"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "cel.clear"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "color": {
+                      "items": {
+                        "format": "uint8",
+                        "minimum": 0.0,
+                        "type": "integer"
+                      },
+                      "maxItems": 4,
+                      "minItems": 4,
+                      "type": "array"
+                    },
+                    "filled": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "rect": {
+                      "$ref": "#/definitions/Rect"
+                    }
+                  },
+                  "required": [
+                    "color",
+                    "frame_id",
+                    "layer_id",
+                    "rect"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "canvas.rectangle"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "color": {
+                      "items": {
+                        "format": "uint8",
+                        "minimum": 0.0,
+                        "type": "integer"
+                      },
+                      "maxItems": 4,
+                      "minItems": 4,
+                      "type": "array"
+                    },
+                    "filled": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "rect": {
+                      "$ref": "#/definitions/Rect"
+                    }
+                  },
+                  "required": [
+                    "color",
+                    "frame_id",
+                    "layer_id",
+                    "rect"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "canvas.ellipse"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "dx": {
+                      "default": 0,
+                      "format": "int32",
+                      "type": "integer"
+                    },
+                    "dy": {
+                      "default": 0,
+                      "format": "int32",
+                      "type": "integer"
+                    },
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "operation": {
+                      "$ref": "#/definitions/RegionOperation"
+                    },
+                    "rect": {
+                      "$ref": "#/definitions/Rect"
+                    }
+                  },
+                  "required": [
+                    "frame_id",
+                    "layer_id",
+                    "operation",
+                    "rect"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "canvas.transform"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "height": {
+                      "format": "uint32",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "width": {
+                      "format": "uint32",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "height",
+                    "width"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "document.resize"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "height": {
+                      "format": "uint32",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "offset_x": {
+                      "default": 0,
+                      "format": "int32",
+                      "type": "integer"
+                    },
+                    "offset_y": {
+                      "default": 0,
+                      "format": "int32",
+                      "type": "integer"
+                    },
+                    "width": {
+                      "format": "uint32",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "height",
+                    "width"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "document.canvas_size"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "from": {
+                      "items": {
+                        "format": "uint8",
+                        "minimum": 0.0,
+                        "type": "integer"
+                      },
+                      "maxItems": 4,
+                      "minItems": 4,
+                      "type": "array"
+                    },
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "to": {
+                      "items": {
+                        "format": "uint8",
+                        "minimum": 0.0,
+                        "type": "integer"
+                      },
+                      "maxItems": 4,
+                      "minItems": 4,
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "frame_id",
+                    "from",
+                    "layer_id",
+                    "to"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "canvas.replace_color"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "animation.tag_remove"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "from_frame": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "to_frame": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "from_frame",
+                    "name",
+                    "to_frame"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "animation.tag"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "edit": {
+          "$ref": "#/definitions/Edit"
+        },
+        "frame_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "edit",
+        "frame_id"
+      ],
+      "title": "Preview",
+      "type": "object"
+    }
+  },
+  {
+    "id": "history.undo",
+    "summary": "Undo one edit or atomic batch",
+    "effect": "history",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "title": "Empty",
+      "type": "object"
+    }
+  },
+  {
+    "id": "history.redo",
+    "summary": "Redo one edit or atomic batch",
+    "effect": "history",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "title": "Empty",
+      "type": "object"
+    }
+  },
+  {
+    "id": "command.batch",
+    "summary": "Commit edits atomically to one document",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "definitions": {
+        "Edit": {
+          "oneOf": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "layer.create"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "locked": {
+                      "type": [
+                        "boolean",
+                        "null"
+                      ]
+                    },
+                    "name": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "opacity": {
+                      "format": "uint8",
+                      "minimum": 0.0,
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    },
+                    "visible": {
+                      "type": [
+                        "boolean",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "layer_id"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "layer.update"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "layer_id"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "layer.remove"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "duration_ms": {
+                      "format": "uint32",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "source_frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": [
+                        "integer",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "duration_ms"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "frame.add"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "duration_ms": {
+                      "format": "uint32",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "duration_ms",
+                    "frame_id"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "frame.duration"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "colors": {
+                      "items": {
+                        "items": {
+                          "format": "uint8",
+                          "minimum": 0.0,
+                          "type": "integer"
+                        },
+                        "maxItems": 4,
+                        "minItems": 4,
+                        "type": "array"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "colors"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "palette.set"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "color": {
+                      "items": {
+                        "format": "uint8",
+                        "minimum": 0.0,
+                        "type": "integer"
+                      },
+                      "maxItems": 4,
+                      "minItems": 4,
+                      "type": "array"
+                    },
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "mirror_x": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "mirror_y": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "pixel_perfect": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "points": {
+                      "items": {
+                        "items": {
+                          "format": "int32",
+                          "type": "integer"
+                        },
+                        "maxItems": 2,
+                        "minItems": 2,
+                        "type": "array"
+                      },
+                      "type": "array"
+                    },
+                    "size": {
+                      "default": 1,
+                      "format": "uint32",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "color",
+                    "frame_id",
+                    "layer_id",
+                    "points"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "canvas.stroke"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "color": {
+                      "items": {
+                        "format": "uint8",
+                        "minimum": 0.0,
+                        "type": "integer"
+                      },
+                      "maxItems": 4,
+                      "minItems": 4,
+                      "type": "array"
+                    },
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "from": {
+                      "items": {
+                        "format": "int32",
+                        "type": "integer"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2,
+                      "type": "array"
+                    },
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "to": {
+                      "items": {
+                        "format": "int32",
+                        "type": "integer"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2,
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "color",
+                    "frame_id",
+                    "from",
+                    "layer_id",
+                    "to"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "canvas.line"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "at": {
+                      "items": {
+                        "format": "int32",
+                        "type": "integer"
+                      },
+                      "maxItems": 2,
+                      "minItems": 2,
+                      "type": "array"
+                    },
+                    "color": {
+                      "items": {
+                        "format": "uint8",
+                        "minimum": 0.0,
+                        "type": "integer"
+                      },
+                      "maxItems": 4,
+                      "minItems": 4,
+                      "type": "array"
+                    },
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "at",
+                    "color",
+                    "frame_id",
+                    "layer_id"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "canvas.fill"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "height": {
+                      "format": "uint32",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "pixels": {
+                      "items": {
+                        "items": {
+                          "format": "uint8",
+                          "minimum": 0.0,
+                          "type": "integer"
+                        },
+                        "maxItems": 4,
+                        "minItems": 4,
+                        "type": "array"
+                      },
+                      "type": "array"
+                    },
+                    "width": {
+                      "format": "uint32",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "x": {
+                      "format": "int32",
+                      "type": "integer"
+                    },
+                    "y": {
+                      "format": "int32",
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "frame_id",
+                    "height",
+                    "layer_id",
+                    "pixels",
+                    "width",
+                    "x",
+                    "y"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "canvas.patch"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "index": {
+                      "format": "uint",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "index",
+                    "layer_id"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "layer.reorder"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "layer_id",
+                    "name"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "layer.duplicate"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "frame_id"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "frame.remove"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "index": {
+                      "format": "uint",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "frame_id",
+                    "index"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "frame.reorder"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "frame_id",
+                    "layer_id"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "cel.clear"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "color": {
+                      "items": {
+                        "format": "uint8",
+                        "minimum": 0.0,
+                        "type": "integer"
+                      },
+                      "maxItems": 4,
+                      "minItems": 4,
+                      "type": "array"
+                    },
+                    "filled": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "rect": {
+                      "$ref": "#/definitions/Rect"
+                    }
+                  },
+                  "required": [
+                    "color",
+                    "frame_id",
+                    "layer_id",
+                    "rect"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "canvas.rectangle"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "color": {
+                      "items": {
+                        "format": "uint8",
+                        "minimum": 0.0,
+                        "type": "integer"
+                      },
+                      "maxItems": 4,
+                      "minItems": 4,
+                      "type": "array"
+                    },
+                    "filled": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "rect": {
+                      "$ref": "#/definitions/Rect"
+                    }
+                  },
+                  "required": [
+                    "color",
+                    "frame_id",
+                    "layer_id",
+                    "rect"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "canvas.ellipse"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "dx": {
+                      "default": 0,
+                      "format": "int32",
+                      "type": "integer"
+                    },
+                    "dy": {
+                      "default": 0,
+                      "format": "int32",
+                      "type": "integer"
+                    },
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "operation": {
+                      "$ref": "#/definitions/RegionOperation"
+                    },
+                    "rect": {
+                      "$ref": "#/definitions/Rect"
+                    }
+                  },
+                  "required": [
+                    "frame_id",
+                    "layer_id",
+                    "operation",
+                    "rect"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "canvas.transform"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "height": {
+                      "format": "uint32",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "width": {
+                      "format": "uint32",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "height",
+                    "width"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "document.resize"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "height": {
+                      "format": "uint32",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "offset_x": {
+                      "default": 0,
+                      "format": "int32",
+                      "type": "integer"
+                    },
+                    "offset_y": {
+                      "default": 0,
+                      "format": "int32",
+                      "type": "integer"
+                    },
+                    "width": {
+                      "format": "uint32",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "height",
+                    "width"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "document.canvas_size"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "from": {
+                      "items": {
+                        "format": "uint8",
+                        "minimum": 0.0,
+                        "type": "integer"
+                      },
+                      "maxItems": 4,
+                      "minItems": 4,
+                      "type": "array"
+                    },
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "to": {
+                      "items": {
+                        "format": "uint8",
+                        "minimum": 0.0,
+                        "type": "integer"
+                      },
+                      "maxItems": 4,
+                      "minItems": 4,
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "frame_id",
+                    "from",
+                    "layer_id",
+                    "to"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "canvas.replace_color"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "name"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "animation.tag_remove"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "from_frame": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "to_frame": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "from_frame",
+                    "name",
+                    "to_frame"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "animation.tag"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            }
+          ]
+        },
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "commands": {
+          "items": {
+            "$ref": "#/definitions/Edit"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "commands"
+      ],
+      "title": "Batch",
+      "type": "object"
+    }
+  },
+  {
+    "id": "layer.create",
+    "summary": "Apply layer.create as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "layer.update",
+    "summary": "Apply layer.update as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "layer_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "locked": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "opacity": {
+          "format": "uint8",
+          "minimum": 0.0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "visible": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "layer_id"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "layer.remove",
+    "summary": "Apply layer.remove as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "layer_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "layer_id"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "frame.add",
+    "summary": "Apply frame.add as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "duration_ms": {
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "source_frame_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "duration_ms"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "frame.duration",
+    "summary": "Apply frame.duration as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "duration_ms": {
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "frame_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "duration_ms",
+        "frame_id"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "palette.set",
+    "summary": "Apply palette.set as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "colors": {
+          "items": {
+            "items": {
+              "format": "uint8",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "maxItems": 4,
+            "minItems": 4,
+            "type": "array"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "colors"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "canvas.stroke",
+    "summary": "Apply canvas.stroke as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "color": {
+          "items": {
+            "format": "uint8",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": "array"
+        },
+        "frame_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "layer_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "mirror_x": {
+          "default": false,
+          "type": "boolean"
+        },
+        "mirror_y": {
+          "default": false,
+          "type": "boolean"
+        },
+        "pixel_perfect": {
+          "default": false,
+          "type": "boolean"
+        },
+        "points": {
+          "items": {
+            "items": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "maxItems": 2,
+            "minItems": 2,
+            "type": "array"
+          },
+          "type": "array"
+        },
+        "size": {
+          "default": 1,
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "color",
+        "frame_id",
+        "layer_id",
+        "points"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "canvas.line",
+    "summary": "Apply canvas.line as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "color": {
+          "items": {
+            "format": "uint8",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": "array"
+        },
+        "frame_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "from": {
+          "items": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array"
+        },
+        "layer_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "to": {
+          "items": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array"
+        }
+      },
+      "required": [
+        "color",
+        "frame_id",
+        "from",
+        "layer_id",
+        "to"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "canvas.fill",
+    "summary": "Apply canvas.fill as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "at": {
+          "items": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "maxItems": 2,
+          "minItems": 2,
+          "type": "array"
+        },
+        "color": {
+          "items": {
+            "format": "uint8",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": "array"
+        },
+        "frame_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "layer_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "at",
+        "color",
+        "frame_id",
+        "layer_id"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "canvas.patch",
+    "summary": "Apply canvas.patch as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "frame_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "height": {
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "layer_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "pixels": {
+          "items": {
+            "items": {
+              "format": "uint8",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "maxItems": 4,
+            "minItems": 4,
+            "type": "array"
+          },
+          "type": "array"
+        },
+        "width": {
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "x": {
+          "format": "int32",
+          "type": "integer"
+        },
+        "y": {
+          "format": "int32",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "frame_id",
+        "height",
+        "layer_id",
+        "pixels",
+        "width",
+        "x",
+        "y"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "layer.reorder",
+    "summary": "Apply layer.reorder as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "index": {
+          "format": "uint",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "layer_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "index",
+        "layer_id"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "layer.duplicate",
+    "summary": "Apply layer.duplicate as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "layer_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "layer_id",
+        "name"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "frame.remove",
+    "summary": "Apply frame.remove as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "frame_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "frame_id"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "frame.reorder",
+    "summary": "Apply frame.reorder as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "frame_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "index": {
+          "format": "uint",
+          "minimum": 0.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "frame_id",
+        "index"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "cel.clear",
+    "summary": "Apply cel.clear as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "frame_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "layer_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "frame_id",
+        "layer_id"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "canvas.rectangle",
+    "summary": "Apply canvas.rectangle as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "color": {
+          "items": {
+            "format": "uint8",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": "array"
+        },
+        "filled": {
+          "default": false,
+          "type": "boolean"
+        },
+        "frame_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "layer_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "rect": {
+          "$ref": "#/definitions/Rect"
+        }
+      },
+      "required": [
+        "color",
+        "frame_id",
+        "layer_id",
+        "rect"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "canvas.ellipse",
+    "summary": "Apply canvas.ellipse as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "color": {
+          "items": {
+            "format": "uint8",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": "array"
+        },
+        "filled": {
+          "default": false,
+          "type": "boolean"
+        },
+        "frame_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "layer_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "rect": {
+          "$ref": "#/definitions/Rect"
+        }
+      },
+      "required": [
+        "color",
+        "frame_id",
+        "layer_id",
+        "rect"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "canvas.transform",
+    "summary": "Apply canvas.transform as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "dx": {
+          "default": 0,
+          "format": "int32",
+          "type": "integer"
+        },
+        "dy": {
+          "default": 0,
+          "format": "int32",
+          "type": "integer"
+        },
+        "frame_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "layer_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "operation": {
+          "$ref": "#/definitions/RegionOperation"
+        },
+        "rect": {
+          "$ref": "#/definitions/Rect"
+        }
+      },
+      "required": [
+        "frame_id",
+        "layer_id",
+        "operation",
+        "rect"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "document.resize",
+    "summary": "Apply document.resize as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "height": {
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "width": {
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "height",
+        "width"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "document.canvas_size",
+    "summary": "Apply document.canvas_size as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "height": {
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "offset_x": {
+          "default": 0,
+          "format": "int32",
+          "type": "integer"
+        },
+        "offset_y": {
+          "default": 0,
+          "format": "int32",
+          "type": "integer"
+        },
+        "width": {
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "height",
+        "width"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "canvas.replace_color",
+    "summary": "Apply canvas.replace_color as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "frame_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "from": {
+          "items": {
+            "format": "uint8",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": "array"
+        },
+        "layer_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "to": {
+          "items": {
+            "format": "uint8",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": "array"
+        }
+      },
+      "required": [
+        "frame_id",
+        "from",
+        "layer_id",
+        "to"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "animation.tag_remove",
+    "summary": "Apply animation.tag_remove as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "animation.tag",
+    "summary": "Apply animation.tag as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "from_frame": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "name": {
+          "type": "string"
+        },
+        "to_frame": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "from_frame",
+        "name",
+        "to_frame"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "workspace.inspect",
+    "summary": "List bounded project/PNG/GIF files in the current workspace",
+    "effect": "query",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "title": "Empty",
+      "type": "object"
+    }
+  },
+  {
+    "id": "editor.inspect",
+    "summary": "Read shared ephemeral editor context and asset revision",
+    "effect": "query",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "title": "Empty",
+      "type": "object"
+    }
+  },
+  {
+    "id": "editor.configure",
+    "summary": "Configure shared editor context without asset undo history",
+    "effect": "view",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        }
+      },
+      "properties": {
+        "alpha": {
+          "format": "uint8",
+          "minimum": 0.0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "brush_size": {
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "clear_selection": {
+          "default": false,
+          "type": "boolean"
+        },
+        "color": {
+          "items": {
+            "format": "uint8",
+            "minimum": 0.0,
+            "type": "integer"
+          },
+          "maxItems": 4,
+          "minItems": 4,
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "document_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "filled": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "frame_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "grid": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "layer_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "mirror_x": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "mirror_y": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "onion_skin": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "pixel_perfect": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "playback": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "selection": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/Rect"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "tool": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "zoom": {
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      },
+      "title": "Configure",
+      "type": "object"
+    }
+  },
+  {
+    "id": "document.open",
+    "summary": "Load a versioned SpriteLab project under a new session ID",
+    "effect": "lifecycle",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "title": "ReadPath",
+      "type": "object"
+    }
+  },
+  {
+    "id": "document.save",
+    "summary": "Atomically save an editable project inside the workspace",
+    "effect": "file_write",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "overwrite": {
+          "default": false,
+          "type": "boolean"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "title": "WritePath",
+      "type": "object"
+    }
+  },
+  {
+    "id": "document.preview",
+    "summary": "Render a canonical PNG without writing a file",
+    "effect": "query",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "frame_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "frame_id"
+      ],
+      "title": "PreviewArgs",
+      "type": "object"
+    }
+  },
+  {
+    "id": "import.png",
+    "summary": "Create a document from a bounded PNG",
+    "effect": "lifecycle",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "title": "ReadPath",
+      "type": "object"
+    }
+  },
+  {
+    "id": "export.gif",
+    "summary": "Export animated GIF (quantized color, binary alpha, centisecond timing)",
+    "effect": "file_write",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "overwrite": {
+          "default": false,
+          "type": "boolean"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "title": "WritePath",
+      "type": "object"
+    }
+  },
+  {
+    "id": "export.png",
+    "summary": "Export the canonical composited frame PNG",
+    "effect": "file_write",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "frame_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "overwrite": {
+          "default": false,
+          "type": "boolean"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "frame_id",
+        "path"
+      ],
+      "title": "PngArgs",
+      "type": "object"
+    }
+  },
+  {
+    "id": "export.spritesheet",
+    "summary": "Export an untrimmed row-major PNG atlas; return metadata",
+    "effect": "file_write",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "columns": {
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "overwrite": {
+          "default": false,
+          "type": "boolean"
+        },
+        "padding": {
+          "default": 0,
+          "format": "uint32",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "columns",
+        "path"
+      ],
+      "title": "SheetArgs",
+      "type": "object"
+    }
+  }
+]

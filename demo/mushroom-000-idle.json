@@ -1,0 +1,57 @@
+{
+  "frames": [
+    {
+      "duration_ms": 100,
+      "frame": {
+        "h": 32,
+        "w": 32,
+        "x": 1,
+        "y": 1
+      },
+      "frame_id": 2
+    },
+    {
+      "duration_ms": 160,
+      "frame": {
+        "h": 32,
+        "w": 32,
+        "x": 34,
+        "y": 1
+      },
+      "frame_id": 4
+    },
+    {
+      "duration_ms": 160,
+      "frame": {
+        "h": 32,
+        "w": 32,
+        "x": 67,
+        "y": 1
+      },
+      "frame_id": 5
+    },
+    {
+      "duration_ms": 160,
+      "frame": {
+        "h": 32,
+        "w": 32,
+        "x": 100,
+        "y": 1
+      },
+      "frame_id": 6
+    }
+  ],
+  "image": "mushroom-000-idle.png",
+  "schema": "spritelab.atlas/1",
+  "size": {
+    "h": 34,
+    "w": 133
+  },
+  "tags": [
+    {
+      "from_frame": 2,
+      "name": "idle",
+      "to_frame": 6
+    }
+  ]
+}

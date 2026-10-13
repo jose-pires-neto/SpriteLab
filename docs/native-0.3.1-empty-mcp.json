@@ -1,0 +1,74 @@
+{
+  "discovery": {
+    "pid": 22829,
+    "protocol_version": 1,
+    "socket": "/var/folders/z0/37xbxsfn4_v9cmjdp10683pm0000gn/T/sl-22829-18de1f27233ce8c0.sock",
+    "workspace": "/Users/josepires/Documents/ChatGPT/SpriteLab/assets"
+  },
+  "records": [
+    {
+      "command": "document.list",
+      "protocol_version": 1,
+      "request_id": "2ffbc0c5-8721-4cb9-ac3e-f60757bf1b79",
+      "ok": true,
+      "revision": null,
+      "result": {
+        "documents": [
+          {
+            "dirty": true,
+            "document_id": "editor",
+            "path": null,
+            "revision": 0
+          }
+        ]
+      }
+    },
+    {
+      "command": "document.close",
+      "protocol_version": 1,
+      "request_id": "3e1b3ed3-f448-4c89-9e2b-6a0b81b92f3e",
+      "ok": true,
+      "revision": null,
+      "result": {
+        "closed": true,
+        "document_id": "editor"
+      }
+    },
+    {
+      "command": "editor.inspect",
+      "protocol_version": 1,
+      "request_id": "ea8ef530-9687-485b-b34b-9973d3969730",
+      "ok": true,
+      "revision": null,
+      "result": {
+        "dirty": false,
+        "document_path": null,
+        "document_revision": null,
+        "documents": [],
+        "view": {
+          "alpha": 255,
+          "brush_size": 1,
+          "color": [
+            227,
+            167,
+            92,
+            255
+          ],
+          "document_id": null,
+          "filled": false,
+          "frame_id": null,
+          "grid": false,
+          "layer_id": null,
+          "mirror_x": false,
+          "mirror_y": false,
+          "onion_skin": false,
+          "pixel_perfect": false,
+          "playback": false,
+          "selection": null,
+          "tool": "stroke",
+          "zoom": 12
+        }
+      }
+    }
+  ]
+}
