@@ -225,7 +225,14 @@ fn invalid_documents_and_tag_ranges_fail() {
 #[test]
 fn schemas_describe_every_edit() {
     let c = catalog();
-    assert_eq!(c.len(), 35);
+    assert_eq!(c.len(), 36);
+    let transfer = c.iter().find(|d| d.id == "cel.transfer").unwrap();
+    assert!(transfer.undoable);
+    assert_eq!(transfer.effect, "edit");
+    assert_eq!(
+        transfer.arguments_schema["properties"]["overwrite"]["default"],
+        false
+    );
     for d in c {
         assert_eq!(d.arguments_schema["type"], "object");
         assert_eq!(d.arguments_schema["additionalProperties"], false);
@@ -507,4 +514,110 @@ fn snapshot_and_onion_are_read_only() {
     assert_eq!(onion["rgba"][39], 80);
     assert_eq!(e.document("sprite").unwrap(), &before);
     assert_eq!(e.revision("sprite"), revision);
+}
+
+#[test]
+fn cel_transfer_copy_move_overwrite_history_and_locks() {
+    let mut e = setup();
+    assert!(req(&mut e, "canvas.stroke", stroke(), None).ok);
+    assert!(req(&mut e, "frame.add", json!({"duration_ms":120}), None).ok);
+    let target = e.document("sprite").unwrap().frames[1].id;
+    let args = json!({"source_layer_id":1,"source_frame_id":2,"layer_id":1,"frame_id":target});
+    let before = e.document("sprite").unwrap().clone();
+    assert!(req(&mut e, "cel.transfer", args.clone(), None).ok);
+    assert_eq!(
+        e.document("sprite").unwrap().frames[0].cels,
+        e.document("sprite").unwrap().frames[1].cels
+    );
+    // Copy-on-write storage does not link subsequent edits.
+    assert!(
+        req(
+            &mut e,
+            "canvas.stroke",
+            json!({"layer_id":1,"frame_id":target,"points":[[0,0]],"color":[255,0,0,255]}),
+            None
+        )
+        .ok
+    );
+    assert_ne!(
+        e.document("sprite").unwrap().frames[0].cels,
+        e.document("sprite").unwrap().frames[1].cels
+    );
+    let occupied = e.document("sprite").unwrap().clone();
+    assert_eq!(
+        req(&mut e, "cel.transfer", args.clone(), None)
+            .error
+            .unwrap()
+            .code,
+        "cel_occupied"
+    );
+    assert_eq!(e.document("sprite").unwrap(), &occupied);
+    let mut move_args = args.clone();
+    move_args["move_source"] = json!(true);
+    move_args["overwrite"] = json!(true);
+    assert!(req(&mut e, "cel.transfer", move_args.clone(), None).ok);
+    assert!(e.document("sprite").unwrap().frames[0].cels.is_empty());
+    assert!(req(&mut e, "history.undo", json!({}), None).ok);
+    assert_eq!(e.document("sprite").unwrap(), &occupied);
+    assert!(req(&mut e, "history.redo", json!({}), None).ok);
+    assert!(!req(&mut e, "cel.transfer", move_args, None).ok);
+    assert!(req(&mut e, "history.undo", json!({}), None).ok);
+    assert!(
+        req(
+            &mut e,
+            "layer.update",
+            json!({"layer_id":1,"locked":true}),
+            None
+        )
+        .ok
+    );
+    assert_eq!(
+        req(&mut e, "cel.transfer", args, None).error.unwrap().code,
+        "layer_locked"
+    );
+    // No-op at the same unlocked cell leaves revision unchanged.
+    assert!(
+        req(
+            &mut e,
+            "layer.update",
+            json!({"layer_id":1,"locked":false}),
+            None
+        )
+        .ok
+    );
+    let revision = e.revision("sprite");
+    assert!(
+        req(
+            &mut e,
+            "cel.transfer",
+            json!({"source_layer_id":1,"source_frame_id":2,"layer_id":1,"frame_id":2}),
+            None
+        )
+        .ok
+    );
+    assert_eq!(e.revision("sprite"), revision);
+    assert_eq!(
+        before.frames[0].cels,
+        e.document("sprite").unwrap().frames[0].cels
+    );
+}
+
+#[test]
+fn cel_transfer_failed_batch_and_invalid_ids_preserve_source() {
+    let mut e = setup();
+    assert!(req(&mut e, "canvas.stroke", stroke(), None).ok);
+    let before = e.document("sprite").unwrap().clone();
+    assert!(!req(&mut e, "cel.transfer", json!({"source_layer_id":1,"source_frame_id":2,"layer_id":999,"frame_id":2,"move_source":true}), None).ok);
+    assert!(
+        !req(
+            &mut e,
+            "cel.transfer",
+            json!({"source_layer_id":1,"source_frame_id":999,"layer_id":1,"frame_id":2}),
+            None
+        )
+        .ok
+    );
+    assert_eq!(e.document("sprite").unwrap(), &before);
+    assert!(!req(&mut e, "command.batch", json!({"commands":[{"command":"frame.add","args":{"duration_ms":100}},{"command":"cel.transfer","args":{"source_layer_id":1,"source_frame_id":2,"layer_id":1,"frame_id":3,"move_source":true}},{"command":"frame.duration","args":{"frame_id":3,"duration_ms":0}}]}), None).ok);
+    assert_eq!(e.document("sprite").unwrap(), &before);
 }

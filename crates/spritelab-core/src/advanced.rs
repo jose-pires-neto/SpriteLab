@@ -102,6 +102,46 @@ pub fn apply(d: &mut Document, next: &mut Id, edit: Edit) -> Result<Value> {
             retag(d, tags);
             Ok(json!({"frame_id":frame_id}))
         }
+        Edit::CelTransfer {
+            source_layer_id,
+            source_frame_id,
+            layer_id,
+            frame_id,
+            move_source,
+            overwrite,
+        } => {
+            let source = d.frame_index(source_frame_id)?;
+            let target = d.frame_index(frame_id)?;
+            for (id, writing) in [(source_layer_id, move_source), (layer_id, true)] {
+                let layer = d
+                    .layers
+                    .iter()
+                    .find(|l| l.id == id)
+                    .ok_or_else(|| invalid("Layer not found"))?;
+                if writing && layer.locked {
+                    return Err(CommandError::new("layer_locked", "Layer is locked"));
+                }
+            }
+            let cel = d.frames[source]
+                .cels
+                .get(&source_layer_id)
+                .cloned()
+                .ok_or_else(|| invalid("Source cel is empty"))?;
+            if source == target && source_layer_id == layer_id {
+                return Ok(json!({"layer_id":layer_id,"frame_id":frame_id}));
+            }
+            if !overwrite && d.frames[target].cels.contains_key(&layer_id) {
+                return Err(CommandError::new(
+                    "cel_occupied",
+                    "Target cel exists; explicit overwrite required",
+                ));
+            }
+            if move_source {
+                d.frames[source].cels.remove(&source_layer_id);
+            }
+            d.frames[target].cels.insert(layer_id, cel);
+            Ok(json!({"layer_id":layer_id,"frame_id":frame_id}))
+        }
         Edit::CelClear { layer_id, frame_id } => {
             let i = d.frame_index(frame_id)?;
             d.cel_mut(layer_id, frame_id)?;

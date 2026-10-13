@@ -832,6 +832,62 @@
                 "args": {
                   "additionalProperties": false,
                   "properties": {
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "move_source": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "overwrite": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "source_frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "source_layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "frame_id",
+                    "layer_id",
+                    "source_frame_id",
+                    "source_layer_id"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "cel.transfer"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
                     "color": {
                       "items": {
                         "format": "uint8",
@@ -1957,6 +2013,62 @@
                 "command": {
                   "enum": [
                     "cel.clear"
+                  ],
+                  "type": "string"
+                }
+              },
+              "required": [
+                "args",
+                "command"
+              ],
+              "type": "object"
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "args": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "move_source": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "overwrite": {
+                      "default": false,
+                      "type": "boolean"
+                    },
+                    "source_frame_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    },
+                    "source_layer_id": {
+                      "format": "uint64",
+                      "minimum": 0.0,
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "frame_id",
+                    "layer_id",
+                    "source_frame_id",
+                    "source_layer_id"
+                  ],
+                  "type": "object"
+                },
+                "command": {
+                  "enum": [
+                    "cel.transfer"
                   ],
                   "type": "string"
                 }
@@ -3561,6 +3673,95 @@
       "required": [
         "frame_id",
         "layer_id"
+      ],
+      "type": "object"
+    }
+  },
+  {
+    "id": "cel.transfer",
+    "summary": "Apply cel.transfer as one reversible edit",
+    "effect": "edit",
+    "undoable": true,
+    "arguments_schema": {
+      "additionalProperties": false,
+      "definitions": {
+        "Rect": {
+          "additionalProperties": false,
+          "properties": {
+            "height": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "width": {
+              "format": "uint32",
+              "minimum": 0.0,
+              "type": "integer"
+            },
+            "x": {
+              "format": "int32",
+              "type": "integer"
+            },
+            "y": {
+              "format": "int32",
+              "type": "integer"
+            }
+          },
+          "required": [
+            "height",
+            "width",
+            "x",
+            "y"
+          ],
+          "type": "object"
+        },
+        "RegionOperation": {
+          "enum": [
+            "flip_x",
+            "flip_y",
+            "rotate90",
+            "move",
+            "copy",
+            "clear"
+          ],
+          "type": "string"
+        }
+      },
+      "properties": {
+        "frame_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "layer_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "move_source": {
+          "default": false,
+          "type": "boolean"
+        },
+        "overwrite": {
+          "default": false,
+          "type": "boolean"
+        },
+        "source_frame_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        },
+        "source_layer_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "frame_id",
+        "layer_id",
+        "source_frame_id",
+        "source_layer_id"
       ],
       "type": "object"
     }

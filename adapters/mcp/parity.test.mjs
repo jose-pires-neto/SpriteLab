@@ -109,3 +109,37 @@ test('MCP recovery persists across independent sessions and restores editable pi
     assert.equal((await call(client, { command: 'recovery.delete', args: { entry } })).structuredContent.ok, true);
   } finally { await client.close(); await rm(workspace, { recursive: true, force: true }); }
 });
+
+test('cel transfer is discoverable and reversible through the actual MCP SDK', async () => {
+  const workspace = await mkdtemp(resolve(tmpdir(), 'spritelab-cels-'));
+  const client = await connect(workspace);
+  try {
+    const tools = await client.listTools();
+    assert(tools.tools.some(t => t.name === 'spritelab_cel_transfer'));
+    const edit = async (command, args) => {
+      const r = await call(client, { document_id: 'cels', command, args });
+      assert.equal(r.isError, false, JSON.stringify(r)); return r.structuredContent;
+    };
+    await edit('document.create', {width: 8, height: 8});
+    await edit('canvas.stroke', {layer_id: 1, frame_id: 2, points: [[2,2]], color: [10,20,30,255]});
+    const added = await edit('frame.add', {duration_ms: 120});
+    const frame = added.result.results[0].frame_id;
+    const args = { source_layer_id: 1, source_frame_id: 2, layer_id: 1, frame_id: frame };
+    const before = await edit('document.inspect', {});
+    await edit('cel.transfer', args);
+    let state = await edit('document.inspect', {});
+    assert.deepEqual(state.result.document.frames[0].cels, state.result.document.frames[1].cels);
+    const occupied = await call(client, { document_id: 'cels', command: 'cel.transfer', args });
+    assert.equal(occupied.isError, true);
+    assert.equal(occupied.structuredContent.error.code, 'cel_occupied');
+    await edit('history.undo', {});
+    state = await edit('document.inspect', {});
+    assert.deepEqual(state.result.document, before.result.document);
+    await edit('cel.transfer', {...args, move_source: true});
+    state = await edit('document.inspect', {});
+    assert.deepEqual(state.result.document.frames[0].cels, {});
+    await edit('history.undo', {});
+    state = await edit('document.inspect', {});
+    assert.deepEqual(state.result.document, before.result.document);
+  } finally { await client.close(); await rm(workspace, {recursive: true, force: true}); }
+});

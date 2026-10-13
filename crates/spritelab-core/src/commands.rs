@@ -75,6 +75,17 @@ pub enum Edit {
     FrameReorder { frame_id: Id, index: usize },
     #[serde(rename = "cel.clear")]
     CelClear { layer_id: Id, frame_id: Id },
+    #[serde(rename = "cel.transfer")]
+    CelTransfer {
+        source_layer_id: Id,
+        source_frame_id: Id,
+        layer_id: Id,
+        frame_id: Id,
+        #[serde(default)]
+        move_source: bool,
+        #[serde(default)]
+        overwrite: bool,
+    },
     #[serde(rename = "canvas.rectangle")]
     Rectangle {
         layer_id: Id,
