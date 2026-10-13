@@ -34,3 +34,7 @@ Cada item só muda para implementado depois de código, teste do comportamento, 
 ### Incremento 0.4.2
 
 Grade de cels, seleção conjunta de camada/quadro, transferência (copiar/mover) e limpeza, miniaturas canônicas, indicação de tags e ajuste de altura implementados. O engine valida transferências e fornece undo/redo, efeito `edit`, schemas e MCP. Ainda não há cels vinculados, seleção múltipla, timeline com docking, edição visual de intervalos de tags ou reprodução reversa/ping-pong.
+
+## Correção 0.4.3
+
+A lista de camadas e a grade de cels da timeline foram removidas da GUI. Miniaturas de camada estão implementadas no painel direito. O comando cel.transfer permanece disponível por engine/CLI/MCP; document.preview aceita layer_id opcional como consulta de conteúdo isolado sem alterar visibilidade, opacidade ou histórico.

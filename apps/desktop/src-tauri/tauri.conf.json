@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "SpriteLab",
-  "version": "0.4.2",
-  "identifier": "org.assetforge.spritelab.preview42",
+  "version": "0.4.3",
+  "identifier": "org.assetforge.spritelab.preview43",
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",

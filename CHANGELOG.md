@@ -1,5 +1,12 @@
 # Histórico de versões
 
+## 0.4.3 — 13/10/2026
+
+- Remove lista de camadas duplicada e barra de cels da timeline. A faixa inferior volta a mostrar somente quadros.
+- Adiciona miniatura isolada de cada camada na lateral direita, atualizada com o quadro atual.
+- `document.preview` aceita `layer_id` opcional, consulta sem efeitos persistentes nem histórico, com renderização no Rust. Visibilidade/opacidade da camada não apagam a miniatura.
+
+
 ## 0.4.2 — 13/10/2026
 
 - Timeline em grade de camadas/quadros com miniaturas canônicas, cels presentes/vazios, indicação de tags e altura ajustável.

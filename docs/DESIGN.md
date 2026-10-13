@@ -20,3 +20,7 @@ Referências de fluxo: [workspace do Aseprite](https://www.aseprite.org/docs/wor
 ## Timeline 0.4.2
 
 Grade de camadas × quadros embaixo do canvas, nomes de camadas fixos à esquerda e cabeçalho de quadros fixo no topo durante a rolagem. Miniaturas representam composição canônica; pontos representam presença de buffers, sem inferir vínculo. A seleção marca a célula e a coluna atual. Ferramentas de cel ficam junto à grade. Altura ajustável evita retirar espaço do canvas em sprites simples e permite expandir projetos com várias camadas.
+
+## Correção 0.4.3
+
+A grade de camadas da 0.4.2 duplicou informação e foi rejeitada no uso real. A 0.4.3 elimina essa grade e a barra extra de cels. A timeline apresenta quadros; o painel lateral concentra camadas, com miniaturas de conteúdo isolado no quadro atual.

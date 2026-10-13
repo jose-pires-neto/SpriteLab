@@ -75,3 +75,9 @@ Validado em macOS arm64: fmt, Clippy workspace/all-targets/locked com warnings n
 Documento de QA criado via MCP numa nova janela: dois quadros/duas camadas. Cópia do cel original e colagem no segundo quadro pela GUI resultaram em exatamente uma revisão; MCP confirmou buffers iguais. Command-Z pela GUI e inspeção MCP confirmaram recuperação integral da estrutura/conteúdo inicial. Evidência: `native-0.4.2-timeline.json`. O documento não foi salvo sobre assets do usuário.
 
 Transferência e rejeição de destino ocupado, bloqueios, IDs inválidos, rollback em batch, no-op, undo/redo e cópia independente foram testados no core; descoberta e execução através do SDK MCP também passaram. Drag com modificador, resize por pointer e todos os tamanhos de janela não receberam cobertura interativa exaustiva. Cels vinculados e seleção múltipla continuam pendentes. Bundle local ad-hoc signed/debug, sem notarização ou publicação.
+
+## 0.4.3 — camadas sem duplicação
+
+Passaram fmt, Clippy locked/all-targets com warnings negados, build locked, 34 testes Rust (22 core + 12 runtime), npm ci ignore-scripts, 8 testes MCP SDK e build TypeScript/Vite/Tauri. Miniatura isolada foi testada com alpha, camada oculta/opacidade zero, cel ausente, IDs inválidos e ausência de mutação/revisão. O teste MCP confirmou a imagem PNG isolada pelo SDK real.
+
+Na janela nativa 0.4.3, Slime-Menta foi aberto pela GUI: três camadas com miniaturas próprias apareceram somente na lateral; timeline com 32 quadros sem grade de camadas ou barra de cels. Selecionar Gel na lateral e o quadro 11 na timeline funcionou. Miniaturas conferidas visualmente após o carregamento. Não foi feita edição persistente no projeto do slime. Bundle ZIP verificado com codesign. A inspeção não cobre todas as janelas/tamanhos ou todos os recursos do editor.

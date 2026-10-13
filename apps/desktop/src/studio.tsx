@@ -33,12 +33,15 @@ export function FrameThumbnail({
   documentId,
   frameId,
   revision,
+  layerId,
 }: {
   documentId: string;
   frameId: number;
   revision: number;
+  layerId?: number;
 }) {
-  const [source, Source] = useState<string>();
+  const [source, Source] = useState<{ key: string; url: string }>();
+  const key = `${documentId}:${frameId}:${layerId ?? "all"}`;
   useEffect(() => {
     let active = true;
     const timer = setTimeout(() => {
@@ -46,12 +49,18 @@ export function FrameThumbnail({
         request: {
           document_id: documentId,
           command: "document.preview",
-          args: { frame_id: frameId },
+          args: {
+            frame_id: frameId,
+            ...(layerId !== undefined ? { layer_id: layerId } : {}),
+          },
         },
       })
         .then((response) => {
           if (active && response.ok)
-            Source("data:image/png;base64," + response.result.png_base64);
+            Source({
+              key,
+              url: "data:image/png;base64," + response.result.png_base64,
+            });
         })
         .catch(() => {
           if (active) Source(undefined);
@@ -61,9 +70,9 @@ export function FrameThumbnail({
       active = false;
       clearTimeout(timer);
     };
-  }, [documentId, frameId, revision]);
-  return source ? (
-    <img className="frame-thumbnail" src={source} alt="" />
+  }, [documentId, frameId, revision, layerId, key]);
+  return source?.key === key ? (
+    <img className="frame-thumbnail" src={source.url} alt="" />
   ) : (
     <span className="frame-placeholder" aria-hidden="true" />
   );

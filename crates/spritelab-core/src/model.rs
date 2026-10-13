@@ -46,6 +46,17 @@ pub fn invalid(message: impl Into<String>) -> CommandError {
     CommandError::new("invalid_arguments", message)
 }
 impl Document {
+    /// Thumbnail content is independent of layer visibility and opacity.
+    pub fn render_layer(&self, layer: Id, frame: Id) -> Result<Vec<u8>> {
+        if !self.layers.iter().any(|l| l.id == layer) {
+            return Err(CommandError::new("not_found", "Layer not found"));
+        }
+        let i = self.frame_index(frame)?;
+        Ok(match self.frames[i].cels.get(&layer) {
+            Some(cel) => cel.iter().flatten().copied().collect(),
+            None => vec![0; self.area() * 4],
+        })
+    }
     pub fn new(width: u32, height: u32) -> Result<Self> {
         let d = Self {
             format_version: 1,

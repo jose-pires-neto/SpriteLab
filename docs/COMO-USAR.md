@@ -32,8 +32,8 @@ O aplicativo cria uma cópia independente dos documentos alterados a cada 15 seg
 
 Use Arquivo para criar, abrir/importar, salvar, exportar e recuperar trabalho. Os documentos abertos aparecem em abas; o botão × fecha a aba, com confirmação quando existem alterações. Paleta e camadas ficam fixas à direita. A barra no topo acompanha a ferramenta selecionada. Redimensionamento fica no menu Sprite, zoom e grade no rodapé, e onion skin junto à animação. Inspecionar comandos fica no menu Automação. O limite de quatro documentos por sessão continua vigente.
 
-## Timeline 0.4.2
+## Quadros e camadas — 0.4.3
 
-Cada linha representa uma camada, cada coluna um quadro. ● indica um cel armazenado; · indica ausência de cel (transparência). Um cel pode conter apenas pixels transparentes. Clique numa célula para selecionar camada e quadro juntos. Copiar cel guarda uma referência ao cel atual; Colar usa o conteúdo atual daquela origem, sem copiar pixels na interface. Arraste para mover; segure Option/Alt ao soltar para copiar. Substituir um destino existente pede confirmação; Desfazer recupera origem e destino. Limpar cel remove só aquela combinação de camada/quadro. Camadas bloqueadas não aceitam alterações.
+A faixa inferior mostra somente os quadros de animação, com miniatura, número e duração. Clique para selecionar o quadro. A lista de camadas fica somente na lateral direita: cada camada tem uma miniatura do seu próprio conteúdo no quadro atual. A miniatura continua visível com a camada oculta ou com opacidade zero para ajudar a identificar seu conteúdo. Ausência de cel aparece como transparência.
 
-Arraste o divisor da timeline para ajustar a altura; com foco no divisor, use as setas para ajustar pelo teclado. Tags existentes aparecem na grade; criação ainda abrange a animação inteira. Cels vinculados e seleção múltipla ainda não estão disponíveis.
+Arraste o divisor da timeline para ajustar a altura; com foco no divisor, use as setas para ajustar pelo teclado. As operações avançadas `cel.transfer` e `cel.clear` continuam no Command Engine/MCP e no inspetor de comandos; a lista duplicada e a barra extra de cels foram removidas.

@@ -143,3 +143,25 @@ test('cel transfer is discoverable and reversible through the actual MCP SDK', a
     assert.deepEqual(state.result.document, before.result.document);
   } finally { await client.close(); await rm(workspace, {recursive: true, force: true}); }
 });
+
+test('layer thumbnails are canonical isolated PNG queries via MCP', async () => {
+  const workspace = await mkdtemp(resolve(tmpdir(), 'spritelab-layer-preview-'));
+  const client = await connect(workspace);
+  try {
+    const query = async (command, args) => {
+      const r = await call(client, {document_id:'thumb',command,args});
+      assert.equal(r.isError, false, JSON.stringify(r));return r.structuredContent;
+    };
+    await query('document.create',{width:2,height:2});
+    await query('canvas.stroke',{layer_id:1,frame_id:2,points:[[0,0]],color:[100,200,50,128]});
+    const original = await query('document.preview',{frame_id:2});
+    await query('layer.update',{layer_id:1,visible:false,opacity:0});
+    const before = await query('document.inspect',{});
+    const preview = await call(client,{document_id:'thumb',command:'document.preview',args:{frame_id:2,layer_id:1}});
+    assert.equal(preview.isError,false);
+    assert.equal(preview.structuredContent.result.png_base64,original.result.png_base64);
+    assert(preview.content.some(c => c.type === 'image'));
+    const after = await query('document.inspect',{});
+    assert.deepEqual(after.result,before.result); assert.equal(after.revision,before.revision);
+  } finally {await client.close();await rm(workspace,{recursive:true,force:true});}
+});

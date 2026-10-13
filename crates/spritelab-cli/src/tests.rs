@@ -451,3 +451,92 @@ fn recovery_survives_runtime_and_keeps_unsaved_baseline() {
     assert_eq!(*reopened.engine.document("b").unwrap(), expected);
     fs::remove_dir_all(root).unwrap();
 }
+
+#[test]
+fn layer_preview_is_isolated_read_only_and_ignores_visibility() {
+    let root = test_root("layer-preview");
+    let mut r = Runtime::new(&root).unwrap();
+    assert!(
+        call(
+            &mut r,
+            "a",
+            "document.create",
+            json!({"width":2,"height":2})
+        )
+        .ok
+    );
+    assert!(
+        call(
+            &mut r,
+            "a",
+            "canvas.stroke",
+            json!({"layer_id":1,"frame_id":2,"points":[[0,0]],"color":[100,200,50,128]})
+        )
+        .ok
+    );
+    assert!(
+        call(
+            &mut r,
+            "a",
+            "layer.update",
+            json!({"layer_id":1,"visible":false,"opacity":0})
+        )
+        .ok
+    );
+    let before = r.engine.document("a").unwrap().clone();
+    let revision = r.engine.revision("a");
+    let preview = call(
+        &mut r,
+        "a",
+        "document.preview",
+        json!({"frame_id":2,"layer_id":1}),
+    );
+    assert!(preview.ok);
+    let encoded = STANDARD
+        .decode(preview.result.unwrap()["png_base64"].as_str().unwrap())
+        .unwrap();
+    assert_eq!(
+        encoded,
+        encode_png(
+            2,
+            2,
+            &[100, 200, 50, 128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        )
+        .unwrap()
+    );
+    assert!(
+        !call(
+            &mut r,
+            "a",
+            "document.preview",
+            json!({"frame_id":2,"layer_id":999})
+        )
+        .ok
+    );
+    assert!(
+        !call(
+            &mut r,
+            "a",
+            "document.preview",
+            json!({"frame_id":999,"layer_id":1})
+        )
+        .ok
+    );
+    assert_eq!(r.engine.document("a").unwrap(), &before);
+    assert_eq!(r.engine.revision("a"), revision);
+    assert!(call(&mut r, "a", "frame.add", json!({"duration_ms":100})).ok);
+    let empty = call(
+        &mut r,
+        "a",
+        "document.preview",
+        json!({"frame_id":3,"layer_id":1}),
+    );
+    assert!(empty.ok);
+    assert_eq!(
+        STANDARD
+            .decode(empty.result.unwrap()["png_base64"].as_str().unwrap())
+            .unwrap(),
+        encode_png(2, 2, &[0; 16]).unwrap()
+    );
+    fs::remove_dir_all(root).unwrap();
+}

@@ -3,8 +3,8 @@ import { createRoot } from "react-dom/client";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { invoke } from "@tauri-apps/api/core";
 import "./style.css";
-import { ToolIcon, StudioMenu, ResourceDialog } from "./studio";
-import { CelTimeline } from "./timeline";
+import { ToolIcon, FrameThumbnail, StudioMenu, ResourceDialog } from "./studio";
+import { FrameTimeline } from "./timeline";
 type Doc = {
   width: number;
   height: number;
@@ -1256,7 +1256,13 @@ function App() {
                           void run("layer.update", { layer_id: v.id, name: n });
                       }}
                     >
-                      {v.name}
+                      <FrameThumbnail
+                        documentId={documentId.current}
+                        frameId={f}
+                        layerId={v.id}
+                        revision={rev.current}
+                      />
+                      <span>{v.name}</span>
                     </button>
                     <button
                       title="Bloquear"
@@ -1436,45 +1442,17 @@ function App() {
           </label>
         </fieldset>
         {d && (
-          <CelTimeline
+          <FrameTimeline
             documentId={documentId.current}
-            document={d}
+            frames={d.frames}
             frameId={f}
-            layerId={l}
             revision={rev.current}
-            select={(cell) => {
+            select={(frame) => {
               if (drawing.current) return;
               Play(false);
-              F(cell.frame_id);
-              L(cell.layer_id);
-              view({ ...cell, playback: false });
-              void refresh(cell.frame_id).catch((e) => S(String(e)));
-            }}
-            clear={(cell) => void run("cel.clear", cell)}
-            transfer={async (source, target, move) => {
-              if (drawing.current) return;
-              if (
-                source.layer_id === target.layer_id &&
-                source.frame_id === target.frame_id
-              )
-                return;
-              const exists = current.current?.frames.find(
-                (v) => v.id === target.frame_id,
-              )?.cels[target.layer_id];
-              if (
-                exists &&
-                !(await ask(
-                  "Substituir o cel de destino? Esta operação pode ser desfeita.",
-                ))
-              )
-                return;
-              await run("cel.transfer", {
-                source_layer_id: source.layer_id,
-                source_frame_id: source.frame_id,
-                ...target,
-                move_source: move,
-                overwrite: !!exists,
-              });
+              F(frame);
+              view({ frame_id: frame, playback: false });
+              void refresh(frame).catch((e) => S(String(e)));
             }}
           />
         )}
@@ -1509,7 +1487,7 @@ function App() {
               ))}
             </select>
           </label>
-          <span>v0.4.2</span>
+          <span>v0.4.3</span>
         </div>
       </footer>
       {resource && (

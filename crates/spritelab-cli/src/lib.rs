@@ -53,6 +53,7 @@ struct SheetArgs {
 #[serde(deny_unknown_fields)]
 struct PreviewArgs {
     frame_id: Id,
+    layer_id: Option<Id>,
 }
 pub fn catalog() -> Vec<Descriptor> {
     let mut out = spritelab_core::catalog();
@@ -358,7 +359,11 @@ impl Runtime {
             }
             "document.preview" => {
                 let a: PreviewArgs = decode(r.args.clone())?;
-                let png = encode_png(d.width, d.height, &d.render(a.frame_id)?)?;
+                let rgba = match a.layer_id {
+                    Some(layer) => d.render_layer(layer, a.frame_id)?,
+                    None => d.render(a.frame_id)?,
+                };
+                let png = encode_png(d.width, d.height, &rgba)?;
                 Ok(
                     json!({"mime_type":"image/png","width":d.width,"height":d.height,"png_base64":STANDARD.encode(png)}),
                 )

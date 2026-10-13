@@ -4650,6 +4650,14 @@
           "format": "uint64",
           "minimum": 0.0,
           "type": "integer"
+        },
+        "layer_id": {
+          "format": "uint64",
+          "minimum": 0.0,
+          "type": [
+            "integer",
+            "null"
+          ]
         }
       },
       "required": [
