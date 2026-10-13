@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { invoke } from "@tauri-apps/api/core";
 import "./style.css";
-import { ToolIcon, FrameThumbnail } from "./studio";
+import { ToolIcon, FrameThumbnail, StudioMenu, ResourceDialog } from "./studio";
 type Doc = {
   width: number;
   height: number;
@@ -42,6 +42,7 @@ function App() {
   const [color, C] = useState("#e3a75c");
   const [zoom, Z] = useState(12);
   const [status, S] = useState("Iniciando…");
+  const [resource, Resource] = useState<"files" | "recovery">();
   const [recovery, Recovery] = useState<
     {
       entry: string;
@@ -279,6 +280,7 @@ function App() {
       rev.current = 0;
       await configure({ document_id: next, playback: false });
       await refresh();
+      Resource(undefined);
       N("recuperado");
       Dirty(true);
       S(
@@ -400,7 +402,6 @@ function App() {
   };
   const open = async (path: string) => {
     Play(false);
-    if (dirty && !(await ask("Descartar alterações não salvas?"))) return;
     try {
       const next = "editor-" + ++incoming.current;
       const r: any = await invoke("execute", {
@@ -411,7 +412,6 @@ function App() {
         },
       });
       if (!r.ok) throw Error(r.error.message);
-      if (documentId.current) await cmd("document.close");
       documentId.current = next;
       await configure({ document_id: next });
       rev.current = 0;
@@ -419,21 +419,74 @@ function App() {
       saved.current = JSON.stringify(current.current);
       Dirty(false);
       N(path.replace(/\.(spritelab|png)$/, ""));
+      Resource(undefined);
       S("Aberto: " + path);
     } catch (e) {
       S(String(e));
     }
   };
+  const closeTab = async (id: string) => {
+    if (drawing.current) return;
+    try {
+      const inspection: any = await invoke("execute", {
+        request: { command: "document.inspect", document_id: id, args: {} },
+      });
+      if (!inspection.ok) throw Error(inspection.error.message);
+      const listing: any = await invoke("execute", {
+        request: { command: "document.list", args: {} },
+      });
+      if (!listing.ok) throw Error(listing.error.message);
+      const entry = listing.result.documents.find(
+        (item: any) => item.document_id === id,
+      );
+      if (
+        entry?.dirty &&
+        !(await ask("Fechar este documento e descartar alterações não salvas?"))
+      )
+        return;
+      const response: any = await invoke("execute", {
+        request: {
+          command: "document.close",
+          document_id: id,
+          expected_revision: inspection.revision,
+          args: {},
+        },
+      });
+      if (!response.ok) throw Error(response.error.message);
+      const state: any = await invoke("execute", {
+        request: { command: "editor.inspect", args: {} },
+      });
+      documentId.current = state.result.view.document_id ?? "";
+      if (documentId.current) {
+        rev.current = state.result.document_revision;
+        await refresh(state.result.view.frame_id);
+      } else clearDocument();
+      Documents(state.result.documents);
+    } catch (e) {
+      S(String(e));
+    }
+  };
   const fresh = async () => {
-    if (dirty && !(await ask("Descartar alterações não salvas?"))) return;
     const size = Number(
       await ask("Tamanho do canvas quadrado (1 a 512)", "32"),
     );
     if (!Number.isInteger(size) || size < 1 || size > 512) return;
-    if (documentId.current) await cmd("document.close");
-    else documentId.current = "editor-" + ++incoming.current;
+    const next = "editor-" + ++incoming.current;
+    try {
+      const result: any = await invoke("execute", {
+        request: {
+          document_id: next,
+          command: "document.create",
+          args: { width: size, height: size },
+        },
+      });
+      if (!result.ok) throw Error(result.error.message);
+    } catch (e) {
+      S(String(e));
+      return;
+    }
+    documentId.current = next;
     rev.current = 0;
-    await cmd("document.create", { width: size, height: size }, false);
     saved.current = "";
     N("sem-titulo");
     await configure({ document_id: documentId.current });
@@ -613,7 +666,8 @@ function App() {
   };
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
-      if (dialog) return;
+      if (dialog || (e.target as HTMLElement).closest("dialog,.menu-items"))
+        return;
       if (drawing.current) {
         if (e.key === "Escape") cancel();
         return;
@@ -704,155 +758,312 @@ function App() {
   }, [dirty]);
   return (
     <div className="app">
-      <header>
+      <header className="menu-bar">
         <strong className="brand">
           <span className="brand-mark" aria-hidden="true">
             ▟
           </span>{" "}
-          SpriteLab <small>Studio</small>
+          SpriteLab
         </strong>
-        <span>
-          {name}
-          {dirty ? " •" : ""}
+        <StudioMenu label="Arquivo">
+          <button onClick={() => void fresh()}>Novo documento…</button>
+          <button onClick={() => Resource("files")}>Abrir / importar…</button>
+          <button disabled={!d} onClick={() => void save()}>
+            Salvar… <kbd>⌘S</kbd>
+          </button>
+          <hr />
+          <button disabled={!d} onClick={() => void exportFile()}>
+            Exportar PNG…
+          </button>
+          <button disabled={!d} onClick={() => void exportFile(true)}>
+            Exportar spritesheet…
+          </button>
+          <button disabled={!d} onClick={() => void exportFile(false, true)}>
+            Exportar GIF…
+          </button>
+          <hr />
+          <button onClick={() => Resource("recovery")}>
+            Recuperar trabalho…
+          </button>
+        </StudioMenu>
+        <StudioMenu label="Editar">
+          <button disabled={!d} onClick={() => void run("history.undo")}>
+            Desfazer <kbd>⌘Z</kbd>
+          </button>
+          <button disabled={!d} onClick={() => void run("history.redo")}>
+            Refazer <kbd>⇧⌘Z</kbd>
+          </button>
+        </StudioMenu>
+        <StudioMenu label="Sprite">
+          <fieldset disabled={!d}>
+            {" "}
+            <button
+              onClick={async () => {
+                const text = await ask(
+                  "Redimensionar largura,altura",
+                  `${d!.width},${d!.height}`,
+                );
+                if (!text) return;
+                const [width, height] = text.split(",").map(Number);
+                void run("document.resize", { width, height });
+              }}
+            >
+              Redimensionar sprite
+            </button>
+            <button
+              onClick={async () => {
+                const text = await ask(
+                  "Canvas largura,altura,offsetX,offsetY",
+                  `${d!.width},${d!.height},0,0`,
+                );
+                if (!text) return;
+                const [width, height, offset_x, offset_y] = text
+                  .split(",")
+                  .map(Number);
+                void run("document.canvas_size", {
+                  width,
+                  height,
+                  offset_x,
+                  offset_y,
+                });
+              }}
+            >
+              Tamanho do canvas
+            </button>
+          </fieldset>
+        </StudioMenu>
+        <StudioMenu label="Automação">
+          <button onClick={() => Panel(true)}>Inspecionar comandos…</button>
+        </StudioMenu>
+        <span className="document-meta">
+          {d ? `${d.width} × ${d.height} px / RGBA` : "Nenhum documento"}
         </span>
-        <select
-          aria-label="Documentos da sessão"
-          value={documentId.current}
-          onChange={async (e) => {
-            const id = e.target.value;
-            await configure({ document_id: id, playback: false });
-            documentId.current = id;
-            await refresh();
-          }}
-        >
-          {!documentId.current && (
-            <option value="">Selecionar documento…</option>
-          )}
-          {documents.map((v) => (
-            <option key={v.document_id} value={v.document_id}>
-              {v.path ?? v.document_id}
-              {v.dirty ? " •" : ""}
-            </option>
-          ))}
-        </select>
-        <button onClick={() => void fresh()}>Novo</button>
-        <button disabled={!d} onClick={() => void save()}>
-          Salvar
-        </button>
-        <button disabled={!d} onClick={() => void exportFile()}>
-          PNG
-        </button>
-        <button disabled={!d} onClick={() => void exportFile(true)}>
-          Spritesheet
-        </button>
-        <button disabled={!d} onClick={() => void exportFile(false, true)}>
-          GIF
-        </button>
-        <button onClick={() => Panel((v) => !v)}>Comandos</button>
       </header>
-      <div className="options">
-        <button onClick={() => void run("history.undo")}>↶ Desfazer</button>
-        <button onClick={() => void run("history.redo")}>↷ Refazer</button>
-        <label>
-          Zoom{" "}
-          <select
-            value={zoom}
-            onChange={(e) => {
-              Z(+e.target.value);
-              view({ zoom: +e.target.value });
-            }}
-          >
-            {[1, 2, 4, 6, 8, 12, 16, 24].map((z) => (
-              <option key={z} value={z}>
-                {z * 100}%
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          Grade{" "}
-          <input
-            type="checkbox"
-            checked={grid}
-            onChange={(e) => {
-              Grid(e.target.checked);
-              view({ grid: e.target.checked });
-            }}
-          />
-        </label>
-        <label>
-          Onion{" "}
-          <input
-            type="checkbox"
-            checked={onion}
-            onChange={(e) => {
-              Onion(e.target.checked);
-              view({ onion_skin: e.target.checked });
-            }}
-          />
-        </label>
-        <label>
-          Pincel{" "}
-          <input
-            type="number"
-            min="1"
-            max="32"
-            value={brush}
-            onChange={(e) => {
-              Brush(+e.target.value);
-              view({ brush_size: +e.target.value });
-            }}
-          />
-        </label>
-        <label>
-          Alpha{" "}
-          <input
-            type="number"
-            min="0"
-            max="255"
-            value={alpha}
-            onChange={(e) => {
-              Alpha(+e.target.value);
-              view({ alpha: +e.target.value });
-            }}
-          />
-        </label>
-        <label>
-          Espelho X{" "}
-          <input
-            type="checkbox"
-            checked={mx}
-            onChange={(e) => {
-              MX(e.target.checked);
-              view({ mirror_x: e.target.checked });
-            }}
-          />
-        </label>
-        <label>
-          Y{" "}
-          <input
-            type="checkbox"
-            checked={my}
-            onChange={(e) => {
-              MY(e.target.checked);
-              view({ mirror_y: e.target.checked });
-            }}
-          />
-        </label>
-        <label>
-          Pixel perfect{" "}
-          <input
-            type="checkbox"
-            checked={perfect}
-            onChange={(e) => {
-              Perfect(e.target.checked);
-              view({ pixel_perfect: e.target.checked });
-            }}
-          />
-        </label>
-        <span>
-          {d?.width} × {d?.height} px · RGBA
+      <div
+        className="document-tabs"
+        role="tablist"
+        aria-label="Documentos abertos"
+      >
+        {documents.map((doc) => (
+          <div className="document-tab" key={doc.document_id}>
+            <button
+              role="tab"
+              aria-selected={doc.document_id === documentId.current}
+              className={doc.document_id === documentId.current ? "active" : ""}
+              onClick={async () => {
+                if (drawing.current) return;
+                await configure({
+                  document_id: doc.document_id,
+                  playback: false,
+                });
+                documentId.current = doc.document_id;
+                await refresh();
+              }}
+            >
+              {doc.path?.replace(/\.spritelab$/, "") ?? doc.document_id}
+              {doc.dirty ? " •" : ""}
+            </button>
+            <button
+              className="close-tab"
+              aria-label={"Fechar documento " + (doc.path ?? doc.document_id)}
+              onClick={() => void closeTab(doc.document_id)}
+            >
+              ×
+            </button>
+          </div>
+        ))}
+        <button
+          className="new-tab"
+          aria-label="Novo documento"
+          onClick={() => void fresh()}
+        >
+          +
+        </button>
+      </div>
+      <div className="options" aria-label="Opções da ferramenta">
+        <span className="tool-caption">
+          <ToolIcon tool={tool} />
+          {
+            {
+              stroke: "Lápis",
+              eraser: "Borracha",
+              line: "Linha",
+              fill: "Preenchimento",
+              pick: "Conta-gotas",
+              rectangle: "Retângulo",
+              ellipse: "Elipse",
+              select: "Seleção",
+            }[tool]
+          }
         </span>
+        <fieldset disabled={!d} className="tool-options">
+          {["stroke", "eraser", "line", "rectangle", "ellipse"].includes(
+            tool,
+          ) && (
+            <>
+              <label>
+                Pincel{" "}
+                <input
+                  type="number"
+                  min="1"
+                  max="32"
+                  value={brush}
+                  onChange={(e) => {
+                    Brush(+e.target.value);
+                    view({ brush_size: +e.target.value });
+                  }}
+                />
+              </label>
+              <label>
+                Alpha{" "}
+                <input
+                  type="number"
+                  min="0"
+                  max="255"
+                  value={alpha}
+                  onChange={(e) => {
+                    Alpha(+e.target.value);
+                    view({ alpha: +e.target.value });
+                  }}
+                />
+              </label>
+            </>
+          )}
+          {["stroke", "eraser", "line"].includes(tool) && (
+            <>
+              <label>
+                Espelho X{" "}
+                <input
+                  type="checkbox"
+                  checked={mx}
+                  onChange={(e) => {
+                    MX(e.target.checked);
+                    view({ mirror_x: e.target.checked });
+                  }}
+                />
+              </label>
+              <label>
+                Y{" "}
+                <input
+                  type="checkbox"
+                  checked={my}
+                  onChange={(e) => {
+                    MY(e.target.checked);
+                    view({ mirror_y: e.target.checked });
+                  }}
+                />
+              </label>
+              <label>
+                Pixel perfect{" "}
+                <input
+                  type="checkbox"
+                  checked={perfect}
+                  onChange={(e) => {
+                    Perfect(e.target.checked);
+                    view({ pixel_perfect: e.target.checked });
+                  }}
+                />
+              </label>
+            </>
+          )}
+          {["rectangle", "ellipse"].includes(tool) && (
+            <>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={filled}
+                  onChange={(e) => {
+                    Filled(e.target.checked);
+                    view({ filled: e.target.checked });
+                  }}
+                />{" "}
+                Formas preenchidas
+              </label>
+            </>
+          )}
+          {tool === "fill" && (
+            <>
+              <label>
+                Alpha{" "}
+                <input
+                  type="number"
+                  min="0"
+                  max="255"
+                  value={alpha}
+                  onChange={(e) => {
+                    Alpha(+e.target.value);
+                    view({ alpha: +e.target.value });
+                  }}
+                />
+              </label>
+            </>
+          )}
+          {tool === "pick" && (
+            <span className="hint">
+              Clique no canvas para escolher uma cor.
+            </span>
+          )}
+          {tool === "select" && (
+            <fieldset disabled={!selection} className="selection-options">
+              {" "}
+              <p>
+                {selection
+                  ? `${selection.width} × ${selection.height} em ${selection.x}, ${selection.y}`
+                  : "Selecione uma região com M"}
+              </p>
+              <div className="row">
+                {[
+                  ["flip_x", "↔"],
+                  ["flip_y", "↕"],
+                  ["rotate90", "↻"],
+                  ["clear", "Limpar"],
+                ].map(([operation, label]) => (
+                  <button
+                    key={operation}
+                    onClick={() =>
+                      void run("canvas.transform", {
+                        layer_id: l,
+                        frame_id: f,
+                        rect: selection ?? {
+                          x: 0,
+                          y: 0,
+                          width: d!.width,
+                          height: d!.height,
+                        },
+                        operation,
+                      })
+                    }
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <div className="row">
+                {["move", "copy"].map((operation) => (
+                  <button
+                    key={operation}
+                    onClick={async () => {
+                      if (!selection) return;
+                      const text = await ask("Deslocamento dx,dy", "1,0");
+                      if (!text) return;
+                      const [dx, dy] = text.split(",").map(Number);
+                      void run("canvas.transform", {
+                        layer_id: l,
+                        frame_id: f,
+                        rect: selection,
+                        operation,
+                        dx,
+                        dy,
+                      });
+                    }}
+                  >
+                    {operation === "move" ? "Mover" : "Copiar"}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+          )}
+        </fieldset>
       </div>
       <main>
         <nav>
@@ -951,7 +1162,7 @@ function App() {
         </div>
         <aside>
           <fieldset disabled={!d}>
-            <section>
+            <section className="color-panel">
               <h2>
                 Paleta <small>Cor & luz</small>
               </h2>
@@ -1001,9 +1212,9 @@ function App() {
               </div>
               <p>{color.toUpperCase()}</p>
             </section>
-            <section>
+            <section className="layers-panel">
               <h2>
-                CAMADAS{" "}
+                Camadas{" "}
                 <button
                   onClick={() =>
                     void run("layer.create", {
@@ -1014,49 +1225,51 @@ function App() {
                   +
                 </button>
               </h2>
-              {[...(d?.layers ?? [])].reverse().map((v) => (
-                <div
-                  key={v.id}
-                  className={"layer " + (l === v.id ? "selected" : "")}
-                >
-                  <button
-                    title="Visibilidade"
-                    onClick={() =>
-                      void run("layer.update", {
-                        layer_id: v.id,
-                        visible: !v.visible,
-                      })
-                    }
+              <div className="layer-list">
+                {[...(d?.layers ?? [])].reverse().map((v) => (
+                  <div
+                    key={v.id}
+                    className={"layer " + (l === v.id ? "selected" : "")}
                   >
-                    {v.visible ? "●" : "○"}
-                  </button>
-                  <button
-                    className="layer-name"
-                    onClick={() => {
-                      L(v.id);
-                      view({ layer_id: v.id });
-                    }}
-                    onDoubleClick={async () => {
-                      const n = await ask("Nome da camada", v.name);
-                      if (n)
-                        void run("layer.update", { layer_id: v.id, name: n });
-                    }}
-                  >
-                    {v.name}
-                  </button>
-                  <button
-                    title="Bloquear"
-                    onClick={() =>
-                      void run("layer.update", {
-                        layer_id: v.id,
-                        locked: !v.locked,
-                      })
-                    }
-                  >
-                    {v.locked ? "▣" : "□"}
-                  </button>
-                </div>
-              ))}
+                    <button
+                      title="Visibilidade"
+                      onClick={() =>
+                        void run("layer.update", {
+                          layer_id: v.id,
+                          visible: !v.visible,
+                        })
+                      }
+                    >
+                      {v.visible ? "●" : "○"}
+                    </button>
+                    <button
+                      className="layer-name"
+                      onClick={() => {
+                        L(v.id);
+                        view({ layer_id: v.id });
+                      }}
+                      onDoubleClick={async () => {
+                        const n = await ask("Nome da camada", v.name);
+                        if (n)
+                          void run("layer.update", { layer_id: v.id, name: n });
+                      }}
+                    >
+                      {v.name}
+                    </button>
+                    <button
+                      title="Bloquear"
+                      onClick={() =>
+                        void run("layer.update", {
+                          layer_id: v.id,
+                          locked: !v.locked,
+                        })
+                      }
+                    >
+                      {v.locked ? "▣" : "□"}
+                    </button>
+                  </div>
+                ))}
+              </div>
               <label>
                 Opacidade{" "}
                 <input
@@ -1119,208 +1332,7 @@ function App() {
                 Excluir camada
               </button>
             </section>
-            <section>
-              <h2>REGIÃO E SPRITE</h2>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={filled}
-                  onChange={(e) => {
-                    Filled(e.target.checked);
-                    view({ filled: e.target.checked });
-                  }}
-                />{" "}
-                Formas preenchidas
-              </label>
-              <p>
-                {selection
-                  ? `${selection.width} × ${selection.height} em ${selection.x}, ${selection.y}`
-                  : "Selecione uma região com M"}
-              </p>
-              <div className="row">
-                {[
-                  ["flip_x", "↔"],
-                  ["flip_y", "↕"],
-                  ["rotate90", "↻"],
-                  ["clear", "Limpar"],
-                ].map(([operation, label]) => (
-                  <button
-                    key={operation}
-                    onClick={() =>
-                      void run("canvas.transform", {
-                        layer_id: l,
-                        frame_id: f,
-                        rect: selection ?? {
-                          x: 0,
-                          y: 0,
-                          width: d!.width,
-                          height: d!.height,
-                        },
-                        operation,
-                      })
-                    }
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-              <div className="row">
-                {["move", "copy"].map((operation) => (
-                  <button
-                    key={operation}
-                    onClick={async () => {
-                      if (!selection) return;
-                      const text = await ask("Deslocamento dx,dy", "1,0");
-                      if (!text) return;
-                      const [dx, dy] = text.split(",").map(Number);
-                      void run("canvas.transform", {
-                        layer_id: l,
-                        frame_id: f,
-                        rect: selection,
-                        operation,
-                        dx,
-                        dy,
-                      });
-                    }}
-                  >
-                    {operation === "move" ? "Mover" : "Copiar"}
-                  </button>
-                ))}
-              </div>
-              <button
-                onClick={async () => {
-                  const text = await ask(
-                    "Redimensionar largura,altura",
-                    `${d!.width},${d!.height}`,
-                  );
-                  if (!text) return;
-                  const [width, height] = text.split(",").map(Number);
-                  void run("document.resize", { width, height });
-                }}
-              >
-                Redimensionar sprite
-              </button>
-              <button
-                onClick={async () => {
-                  const text = await ask(
-                    "Canvas largura,altura,offsetX,offsetY",
-                    `${d!.width},${d!.height},0,0`,
-                  );
-                  if (!text) return;
-                  const [width, height, offset_x, offset_y] = text
-                    .split(",")
-                    .map(Number);
-                  void run("document.canvas_size", {
-                    width,
-                    height,
-                    offset_x,
-                    offset_y,
-                  });
-                }}
-              >
-                Tamanho do canvas
-              </button>
-            </section>
           </fieldset>
-          <section>
-            <h2>Biblioteca</h2>
-            <p className="path">{root}</p>
-            <div className="files">
-              {files
-                .filter((v) => v.endsWith(".spritelab"))
-                .map((v) => (
-                  <button key={v} onClick={() => void open(v)}>
-                    {v}
-                  </button>
-                ))}
-            </div>
-            <label>
-              Importar PNG{" "}
-              <select
-                value=""
-                onChange={(e) => {
-                  if (e.target.value) void open(e.target.value);
-                }}
-              >
-                <option value="">Selecionar arquivo…</option>
-                {files
-                  .filter((v) => v.endsWith(".png"))
-                  .map((v) => (
-                    <option key={v}>{v}</option>
-                  ))}
-              </select>
-            </label>
-            <p className="hint">
-              Esc cancela o traço.
-              <br />
-              Espaço reproduz a animação.
-              <br />
-              Duplo clique renomeia a camada.
-            </p>
-          </section>
-          <section className="recovery-panel">
-            <h2>
-              Recuperação <small>Automática • 15 s</small>
-            </h2>
-            <p className="hint">
-              Cópias independentes do arquivo salvo. Restaurar abre um novo
-              documento.
-            </p>
-            {recoveryError && (
-              <p role="alert" className="recovery-error">
-                {recoveryError}
-              </p>
-            )}
-            {!recovery.length && (
-              <p className="hint">
-                As cópias do trabalho em andamento aparecerão aqui.
-              </p>
-            )}
-            <div className="files">
-              {recovery.map((item) => (
-                <div className="recovery-entry" key={item.entry}>
-                  <button
-                    disabled={!!item.error}
-                    onClick={() => void restore(item.entry)}
-                    title={item.error ?? item.entry}
-                  >
-                    {item.source_path ?? item.document_id}
-                    <small>
-                      {item.error ??
-                        new Date(item.updated_ms).toLocaleString("pt-BR")}
-                    </small>
-                  </button>
-                  <button
-                    aria-label="Descartar cópia de recuperação"
-                    onClick={async () => {
-                      if (
-                        !(await ask(
-                          "Descartar esta cópia de recuperação? O documento aberto será preservado.",
-                        ))
-                      )
-                        return;
-                      try {
-                        const result: any = await invoke("execute", {
-                          request: {
-                            command: "recovery.delete",
-                            args: { entry: item.entry },
-                          },
-                        });
-                        if (!result.ok) throw Error(result.error.message);
-                        Recovery((items) =>
-                          items.filter((v) => v.entry !== item.entry),
-                        );
-                      } catch (e) {
-                        S(String(e));
-                      }
-                    }}
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
-          </section>
         </aside>
       </main>
       <div className="timeline">
@@ -1391,6 +1403,17 @@ function App() {
             Tag
           </button>
           <label>
+            Onion{" "}
+            <input
+              type="checkbox"
+              checked={onion}
+              onChange={(e) => {
+                Onion(e.target.checked);
+                view({ onion_skin: e.target.checked });
+              }}
+            />
+          </label>
+          <label>
             Duração{" "}
             <input
               key={f + "-" + rev.current}
@@ -1438,8 +1461,154 @@ function App() {
       </div>
       <footer>
         <span>{status}</span>
-        <span>SpriteLab 0.4.0 / Sessão local + MCP</span>
+        <div className="viewport-controls">
+          <label>
+            Grade{" "}
+            <input
+              type="checkbox"
+              checked={grid}
+              onChange={(e) => {
+                Grid(e.target.checked);
+                view({ grid: e.target.checked });
+              }}
+            />
+          </label>
+          <label>
+            Zoom{" "}
+            <select
+              value={zoom}
+              onChange={(e) => {
+                Z(+e.target.value);
+                view({ zoom: +e.target.value });
+              }}
+            >
+              {[1, 2, 4, 6, 8, 12, 16, 24].map((z) => (
+                <option key={z} value={z}>
+                  {z * 100}%
+                </option>
+              ))}
+            </select>
+          </label>
+          <span>v0.4.1</span>
+        </div>
       </footer>
+      {resource && (
+        <ResourceDialog
+          title={
+            resource === "files" ? "Abrir documento" : "Recuperar trabalho"
+          }
+          onClose={() => Resource(undefined)}
+        >
+          {resource === "files" ? (
+            <>
+              {" "}
+              <section>
+                <h2>Biblioteca</h2>
+                <p className="path">{root}</p>
+                <div className="files">
+                  {files
+                    .filter((v) => v.endsWith(".spritelab"))
+                    .map((v) => (
+                      <button key={v} onClick={() => void open(v)}>
+                        {v}
+                      </button>
+                    ))}
+                </div>
+                <label>
+                  Importar PNG{" "}
+                  <select
+                    value=""
+                    onChange={(e) => {
+                      if (e.target.value) void open(e.target.value);
+                    }}
+                  >
+                    <option value="">Selecionar arquivo…</option>
+                    {files
+                      .filter((v) => v.endsWith(".png"))
+                      .map((v) => (
+                        <option key={v}>{v}</option>
+                      ))}
+                  </select>
+                </label>
+                <p className="hint">
+                  Esc cancela o traço.
+                  <br />
+                  Espaço reproduz a animação.
+                  <br />
+                  Duplo clique renomeia a camada.
+                </p>
+              </section>
+            </>
+          ) : (
+            <>
+              {" "}
+              <section className="recovery-panel">
+                <h2>
+                  Recuperação <small>Automática • 15 s</small>
+                </h2>
+                <p className="hint">
+                  Cópias independentes do arquivo salvo. Restaurar abre um novo
+                  documento.
+                </p>
+                {recoveryError && (
+                  <p role="alert" className="recovery-error">
+                    {recoveryError}
+                  </p>
+                )}
+                {!recovery.length && (
+                  <p className="hint">
+                    As cópias do trabalho em andamento aparecerão aqui.
+                  </p>
+                )}
+                <div className="files">
+                  {recovery.map((item) => (
+                    <div className="recovery-entry" key={item.entry}>
+                      <button
+                        disabled={!!item.error}
+                        onClick={() => void restore(item.entry)}
+                        title={item.error ?? item.entry}
+                      >
+                        {item.source_path ?? item.document_id}
+                        <small>
+                          {item.error ??
+                            new Date(item.updated_ms).toLocaleString("pt-BR")}
+                        </small>
+                      </button>
+                      <button
+                        aria-label="Descartar cópia de recuperação"
+                        onClick={async () => {
+                          if (
+                            !(await ask(
+                              "Descartar esta cópia de recuperação? O documento aberto será preservado.",
+                            ))
+                          )
+                            return;
+                          try {
+                            const result: any = await invoke("execute", {
+                              request: {
+                                command: "recovery.delete",
+                                args: { entry: item.entry },
+                              },
+                            });
+                            if (!result.ok) throw Error(result.error.message);
+                            Recovery((items) =>
+                              items.filter((v) => v.entry !== item.entry),
+                            );
+                          } catch (e) {
+                            S(String(e));
+                          }
+                        }}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            </>
+          )}
+        </ResourceDialog>
+      )}
       {panel && (
         <div className="command-panel">
           <h2>

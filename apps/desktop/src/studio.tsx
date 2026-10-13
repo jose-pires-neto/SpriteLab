@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 
 const paths: Record<string, string> = {
@@ -66,5 +66,76 @@ export function FrameThumbnail({
     <img className="frame-thumbnail" src={source} alt="" />
   ) : (
     <span className="frame-placeholder" aria-hidden="true" />
+  );
+}
+
+export function StudioMenu({
+  label,
+  children,
+}: {
+  label: string;
+  children: import("react").ReactNode;
+}) {
+  const ref = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    const close = (event: PointerEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node))
+        ref.current.open = false;
+    };
+    const escape = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && ref.current) ref.current.open = false;
+    };
+    document.addEventListener("pointerdown", close);
+    document.addEventListener("keydown", escape);
+    return () => {
+      document.removeEventListener("pointerdown", close);
+      document.removeEventListener("keydown", escape);
+    };
+  }, []);
+  return (
+    <details ref={ref} className="studio-menu">
+      <summary>{label}</summary>
+      <div
+        className="menu-items"
+        onClick={(event) => {
+          if ((event.target as HTMLElement).closest("button") && ref.current)
+            ref.current.open = false;
+        }}
+      >
+        {children}
+      </div>
+    </details>
+  );
+}
+export function ResourceDialog({
+  title,
+  onClose,
+  children,
+}: {
+  title: string;
+  onClose: () => void;
+  children: import("react").ReactNode;
+}) {
+  const ref = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const dialog = ref.current;
+    dialog?.showModal();
+    return () => dialog?.close();
+  }, []);
+  return (
+    <dialog
+      ref={ref}
+      className="resource-dialog"
+      aria-labelledby="resource-title"
+      onCancel={onClose}
+    >
+      <div className="resource-title">
+        <h2 id="resource-title">{title}</h2>
+        <button autoFocus aria-label="Fechar painel" onClick={onClose}>
+          ×
+        </button>
+      </div>
+      {children}
+    </dialog>
   );
 }
