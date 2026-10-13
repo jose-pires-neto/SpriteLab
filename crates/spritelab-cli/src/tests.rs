@@ -347,3 +347,107 @@ fn session_document_statuses_cover_inactive_work_and_color_alpha_is_shared() {
     assert_eq!(list["documents"][0]["path"], "first.spritelab");
     std::fs::remove_dir_all(root).unwrap();
 }
+
+#[test]
+fn recovery_survives_runtime_and_keeps_unsaved_baseline() {
+    let root = test_root("recovery");
+    let mut runtime = Runtime::new(&root).unwrap();
+    assert!(
+        call(
+            &mut runtime,
+            "a",
+            "document.create",
+            json!({"width":4,"height":4})
+        )
+        .ok
+    );
+    assert!(
+        call(
+            &mut runtime,
+            "a",
+            "document.save",
+            json!({"path":"original.spritelab"})
+        )
+        .ok
+    );
+    let original = fs::read(root.join("original.spritelab")).unwrap();
+    assert!(
+        call(
+            &mut runtime,
+            "a",
+            "canvas.fill",
+            json!({"layer_id":1,"frame_id":2,"at":[0,0],"color":[20,40,60,255]})
+        )
+        .ok
+    );
+    let checkpoint = call(&mut runtime, "a", "recovery.checkpoint", json!({}));
+    assert!(checkpoint.ok);
+    let entry = checkpoint.result.unwrap()["entry"]
+        .as_str()
+        .unwrap()
+        .to_owned();
+    assert_eq!(
+        call(&mut runtime, "a", "recovery.checkpoint", json!({}))
+            .result
+            .unwrap()["changed"],
+        false
+    );
+    assert_eq!(
+        call(&mut runtime, "a", "editor.inspect", json!({}))
+            .result
+            .unwrap()["documents"][0]["dirty"],
+        true
+    );
+    assert_eq!(fs::read(root.join("original.spritelab")).unwrap(), original);
+    let expected = runtime.engine.document("a").unwrap().clone();
+    drop(runtime);
+    let mut reopened = Runtime::new(&root).unwrap();
+    assert_eq!(
+        call(&mut reopened, "b", "recovery.list", json!({}))
+            .result
+            .unwrap()["entries"]
+            .as_array()
+            .unwrap()
+            .len(),
+        1
+    );
+    assert!(
+        call(
+            &mut reopened,
+            "b",
+            "recovery.restore",
+            json!({"entry":entry})
+        )
+        .ok
+    );
+    assert_eq!(*reopened.engine.document("b").unwrap(), expected);
+    assert!(
+        !call(
+            &mut reopened,
+            "b",
+            "recovery.restore",
+            json!({"entry":entry})
+        )
+        .ok
+    );
+    assert!(
+        !call(
+            &mut reopened,
+            "b",
+            "recovery.restore",
+            json!({"entry":"../original.spritelab"})
+        )
+        .ok
+    );
+    assert!(
+        call(
+            &mut reopened,
+            "b",
+            "recovery.delete",
+            json!({"entry":entry})
+        )
+        .ok
+    );
+    assert_eq!(*reopened.engine.document("b").unwrap(), expected);
+    fs::remove_dir_all(root).unwrap();
+}

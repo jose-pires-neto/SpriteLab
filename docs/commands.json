@@ -4567,5 +4567,69 @@
       "title": "SheetArgs",
       "type": "object"
     }
+  },
+  {
+    "id": "recovery.checkpoint",
+    "summary": "Write a recovery snapshot without marking the project saved",
+    "effect": "file_write",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "title": "Empty",
+      "type": "object"
+    }
+  },
+  {
+    "id": "recovery.list",
+    "summary": "List bounded recovery snapshots from previous sessions",
+    "effect": "query",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "title": "Empty",
+      "type": "object"
+    }
+  },
+  {
+    "id": "recovery.restore",
+    "summary": "Restore a recovery snapshot into a new unsaved document",
+    "effect": "lifecycle",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "entry": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "entry"
+      ],
+      "title": "EntryArgs",
+      "type": "object"
+    }
+  },
+  {
+    "id": "recovery.delete",
+    "summary": "Explicitly discard one recovery snapshot",
+    "effect": "file_write",
+    "undoable": false,
+    "arguments_schema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "additionalProperties": false,
+      "properties": {
+        "entry": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "entry"
+      ],
+      "title": "EntryArgs",
+      "type": "object"
+    }
   }
 ]

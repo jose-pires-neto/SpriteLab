@@ -1,5 +1,6 @@
 //! Shared file/runtime boundary for CLI, MCP and the future Tauri shell.
 pub mod editor;
+mod recovery;
 pub mod session;
 use assetforge_command::{decode, CommandError, Descriptor, Request, Response, Result};
 use base64::{engine::general_purpose::STANDARD, Engine as _};
@@ -128,12 +129,14 @@ pub fn catalog() -> Vec<Descriptor> {
             arguments_schema: s,
         });
     }
+    out.extend(recovery::catalog());
     out
 }
 pub struct Runtime {
     pub engine: Engine,
     root: PathBuf,
     view: editor::EditorView,
+    recovery: recovery::Recovery,
     saved: std::collections::BTreeMap<String, (String, Document)>,
 }
 impl Runtime {
@@ -143,6 +146,7 @@ impl Runtime {
             return Err(invalid("Workspace must be a directory"));
         }
         Ok(Self {
+            recovery: recovery::Recovery::new(),
             engine: Engine::default(),
             root,
             view: editor::EditorView::new(),
@@ -150,21 +154,22 @@ impl Runtime {
         })
     }
     pub fn execute(&mut self, req: Request) -> Response {
-        let special = matches!(
-            req.command.as_str(),
-            "workspace.inspect"
-                | "document.list"
-                | "editor.inspect"
-                | "editor.configure"
-                | "command.list"
-                | "document.open"
-                | "document.save"
-                | "document.preview"
-                | "import.png"
-                | "export.gif"
-                | "export.png"
-                | "export.spritesheet"
-        );
+        let special = req.command.starts_with("recovery.")
+            || matches!(
+                req.command.as_str(),
+                "workspace.inspect"
+                    | "document.list"
+                    | "editor.inspect"
+                    | "editor.configure"
+                    | "command.list"
+                    | "document.open"
+                    | "document.save"
+                    | "document.preview"
+                    | "import.png"
+                    | "export.gif"
+                    | "export.png"
+                    | "export.spritesheet"
+            );
         if !special {
             let response = self.engine.execute(req);
             self.view.reconcile(&self.engine);
@@ -262,6 +267,9 @@ impl Runtime {
         Ok(result)
     }
     fn dispatch(&mut self, r: &Request) -> Result<Value> {
+        if r.command.starts_with("recovery.") {
+            return self.dispatch_recovery(r);
+        }
         if r.command == "document.list" {
             decode::<Empty>(r.args.clone())?;
             return self.document_statuses();

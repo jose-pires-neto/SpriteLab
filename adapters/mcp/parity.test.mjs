@@ -85,3 +85,27 @@ test('adapter child failure rejects pending requests and closes the session', as
     await assert.rejects(engine.execute({ command: 'command.list', args: {} }));
   } finally { engine.close(); await rm(workspace, { recursive: true, force: true }); }
 });
+
+test('MCP recovery persists across independent sessions and restores editable pixels', async () => {
+  const workspace = await mkdtemp(resolve(tmpdir(), 'spritelab-recovery-mcp-'));
+  let client = await connect(workspace);
+  try {
+    await call(client, { command: 'document.create', document_id: 'source', args: { width: 4, height: 4 } });
+    await call(client, { command: 'canvas.fill', document_id: 'source', expected_revision: 0, args: { layer_id: 1, frame_id: 2, at: [0, 0], color: [42, 90, 150, 255] } });
+    const before = (await call(client, { command: 'document.inspect', document_id: 'source', args: {} })).structuredContent.result.document;
+    const checkpoint = await call(client, { command: 'recovery.checkpoint', document_id: 'source', expected_revision: 1, args: {} });
+    assert.equal(checkpoint.structuredContent.ok, true);
+    const entry = checkpoint.structuredContent.result.entry;
+    const stale = await call(client, { command: 'recovery.checkpoint', document_id: 'source', expected_revision: 0, args: {} });
+    assert.equal(stale.structuredContent.error.code, 'revision_conflict');
+    await client.close();
+    client = await connect(workspace);
+    const listing = await call(client, { command: 'recovery.list', args: {} });
+    assert.equal(listing.structuredContent.result.entries[0].entry, entry);
+    const restored = await call(client, { command: 'recovery.restore', document_id: 'restored', args: { entry } });
+    assert.equal(restored.structuredContent.ok, true);
+    const after = (await call(client, { command: 'document.inspect', document_id: 'restored', args: {} })).structuredContent.result.document;
+    assert.deepEqual(after, before);
+    assert.equal((await call(client, { command: 'recovery.delete', args: { entry } })).structuredContent.ok, true);
+  } finally { await client.close(); await rm(workspace, { recursive: true, force: true }); }
+});
