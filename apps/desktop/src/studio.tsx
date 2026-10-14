@@ -65,7 +65,7 @@ export function FrameThumbnail({
         .catch(() => {
           if (active) Source(undefined);
         });
-    }, 150);
+    }, layerId === undefined ? 150 : 0);
     return () => {
       active = false;
       clearTimeout(timer);

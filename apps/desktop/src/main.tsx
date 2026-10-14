@@ -1487,7 +1487,7 @@ function App() {
               ))}
             </select>
           </label>
-          <span>v0.4.3</span>
+          <span>v0.5.0</span>
         </div>
       </footer>
       {resource && (

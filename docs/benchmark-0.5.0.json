@@ -1,0 +1,21 @@
+{
+  "platform": "macOS-27.0.1-arm64-arm-64bit",
+  "build": "debug",
+  "workload": {
+    "width": 128,
+    "height": 128,
+    "layers": 2,
+    "frames": 16,
+    "allocated_cel_pixels": 524288,
+    "samples": 40
+  },
+  "includes": "JSONL serialization and round-trip; no GUI/MCP/network",
+  "edit": {
+    "median_ms": 2.913,
+    "p95_ms": 3.437
+  },
+  "preview": {
+    "median_ms": 4.608,
+    "p95_ms": 5.166
+  }
+}

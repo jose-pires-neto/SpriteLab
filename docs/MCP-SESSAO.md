@@ -2,12 +2,11 @@
 
 O processo Tauri possui um único `Runtime`, compartilhado com seus comandos nativos e com clientes por socket Unix privado (modo 0600). O MCP não possui implementação de edição. Ele pode iniciar uma sessão headless ou anexar-se ao runtime já aberto.
 
-## Servidores registrados no Codex
+## Registro no Codex e outros hosts
 
-- `spritelab_live`: usa `--attach-latest` na pasta `assets/`. Abra o SpriteLab antes de iniciar/recarregar o cliente MCP. Seleciona a sessão ativa mais recente dessa pasta; para múltiplas janelas, prefira `--attach SOCKET` explícito.
-- `spritelab_headless`: inicia uma sessão isolada para scripts e geração em lote. Seus documentos não são os da janela.
+Rode `node scripts/configure-mcp.mjs --workspace /caminho/absoluto/assets` a partir do checkout ou pacote instalado. O script descobre Node, engine e adapter no computador do usuário e registra globalmente `spritelab_live` e `spritelab_headless`. `--print` gera JSON sem modificar Codex. Veja [Quick start](QUICKSTART.md). Configurações locais `.codex/config.toml` podem sobrescrever registros globais; remova ou atualize overrides antigos do SpriteLab.
 
-O registro global foi feito pelo CLI e confirmado com `codex mcp get spritelab_live --json`. A configuração equivalente também está em `outputs/mcp-config.toml` e `.codex/config.toml`. Não há confirmação de recarga dos novos tools neste chat; reinicie/reconecte o cliente Codex quando necessário. Configurações locais dependem de confiança no projeto, conforme a [documentação oficial](https://learn.chatgpt.com/docs/config-file/config-basic); o formato stdio segue a [documentação MCP](https://learn.chatgpt.com/docs/extend/mcp?surface=cli).
+Abra SpriteLab antes de conectar/recarregar o MCP live. Este seleciona a sessão ativa mais recente da pasta; para múltiplas janelas, `--attach SOCKET` permite escolher explicitamente. Headless inicia sessão isolada; não compartilha os documentos da janela. Se tools não aparecerem num chat novo, recarregue Codex com a aplicação aberta. Registro e handshake não comprovam o fluxo do novo chat: confirme inspeção, preview e uma operação real.
 
 ## Uso
 
@@ -34,11 +33,3 @@ O último comando é headless. `spritelab --workspace assets --host` também pod
 ## Limites
 
 Transporte local Unix validado no macOS; named pipes do Windows ainda não existem. Até 16 conexões, 16 MiB por mensagem e timeout de resposta/escrita; a conexão do servidor pode permanecer ociosa. Encerrar o MCP não fecha a sessão do editor. Encerrar o editor fecha o host; resultados de requests interrompidos não devem ser tratados como rollback. Não há retry automático de mutações, recuperação pós-crash ou reconexão transparente. Metadata/socket obsoletos podem persistir após saída abrupta; descoberta ignora PIDs encerrados.
-
-## Instalação fixa para uso diário — 0.4.3
-
-Aplicativo: `~/Applications/SpriteLab.app`, assinatura local verificada. MCP global e override do projeto apontam para `outputs/runtime-0.4.3/mcp/server.mjs` e `outputs/runtime-0.4.3/spritelab`; dependências Node foram copiadas junto. Essa versão permanece fixa durante novos builds de desenvolvimento. Não mova o repositório/pasta outputs sem atualizar os caminhos. Node continua em `/opt/homebrew/bin/node`.
-
-Abra SpriteLab antes de conectar/recarregar os MCPs no Codex. No chat novo, use `spritelab_live` para ver e editar a janela; `spritelab_headless` é uma sessão independente. Para verificar, peça primeiro `editor.inspect`, catálogo e preview do documento selecionado. O MCP live anexa à sessão mais recente do workspace; com várias versões abertas, confirme documento/revisão antes de editar. A conexão não migra automaticamente para outra janela.
-
-O registro global foi verificado com `codex mcp get`. O SDK oficial também verificou 50 tools nos dois modos, preview isolado de camada e leitura sem mutação da sessão live. Evidência: `installed-mcp-0.4.3.json`. A conexão de um novo chat no próprio Codex ainda precisa ser confirmada pelo usuário; o catálogo deste chat já aberto não foi recarregado. Se live não aparecer, mantenha SpriteLab aberto e reinicie o Codex. Configuração segue a [documentação oficial de MCP](https://learn.chatgpt.com/docs/extend/mcp?surface=cli).

@@ -1,11 +1,35 @@
-# Contributing
+# Contributing to SpriteLab
 
-Implement original code and assets. Aseprite investigation material is reference evidence, not permission to copy its implementation or artwork.
+This is an experimental editor. Bug reports and small tested improvements are welcome. Check existing issues and the coverage/roadmap before starting a large feature. Use original code/art; Aseprite research is evidence, not permission to copy source, icons, fonts, palettes or artwork.
 
-Every new durable operation must add a typed engine command, generated schema/catalog entry, semantic validation, explicit effect/undo behavior, documentation and relevant tests. UI and transport adapters delegate; they do not mutate owned raster buffers or invent editing rules.
+## Local setup
 
-Run `cargo fmt --all --check`, `cargo clippy --workspace --all-targets --locked -- -D warnings`, `cargo test --workspace --locked`, `cargo build --locked`, then `npm ci --ignore-scripts && npm test` under `adapters/mcp`. Python 3 is needed by the adapter parity suite. Update `docs/commands.json` from `spritelab --workspace demo --catalog` when command schemas change. Keep lockfiles committed.
+Rust 1.88+, Node 22.19+, Python 3, and the [Tauri prerequisites](https://v2.tauri.app/start/prerequisites/) for desktop. Headless builds only need Cargo/Node/Python. See docs/QUICKSTART.md. No global MCP or tool installation is required to run tests.
 
-Tests should prove behavior: undo round trips, failure rollback, revision conflicts, renderer/export agreement and real adapter parity. Avoid tests that merely reproduce implementation steps. New formats need golden fixtures and explicit unsupported-feature reporting. Performance claims require measurements and a stated document/workload.
+```sh
+npm ci --ignore-scripts --prefix apps/desktop
+npm ci --ignore-scripts --prefix adapters/mcp
+cargo fmt --all --check
+cargo clippy --workspace --all-targets --locked -- -D warnings
+cargo test --workspace --locked
+cargo build --locked
+npm test --prefix adapters/mcp
+npm run build --prefix apps/desktop
+node --test scripts/configure-mcp.test.mjs
+target/debug/spritelab --workspace demo --catalog > /tmp/spritelab-commands.json
+diff -u docs/commands.json /tmp/spritelab-commands.json
+```
 
-The provided CI configuration is a proposed workflow; it has not run on GitHub. Public repository creation, governance and release distribution remain separate actions.
+On Linux without Tauri dependencies, select `-p assetforge-command -p spritelab-core -p spritelab-cli` for checks/tests and `-p spritelab-cli` for build. Socket tests need local Unix socket access. CI uses fresh macOS/Linux runners; it does not certify Windows or every GUI interaction.
+
+## Architectural gate
+
+The Command Engine owns persistent edits, raster algorithms, semantic validation, history and revisions. React and MCP select parameters and present responses. New durable operations require a typed command, generated schema/catalog entry, declared effect/undo behavior, validation, documentation and meaningful tests. New read-only queries must preserve asset content/history/revision. Never duplicate domain rules in an adapter.
+
+Tests should prove rollback, undo round trips, stale-revision rejection, renderer/export agreement and actual adapter parity. Recovery must preserve original files. Third-party formats need fixtures and explicit unsupported-feature reports. State measurements before making performance claims. Keep lockfiles committed.
+
+## Pull requests
+
+Describe the trigger, resulting behavior, validation and remaining limitations. Include before/after screenshots for visible changes and test instructions. Keep scope focused; do not hide failures by weakening tests. Use clear commits; Portuguese and English are welcome. Maintainers review compatibility and original provenance before merge.
+
+Report security concerns privately per SECURITY.md. Release previews remain explicit about supported targets and incomplete features. Publication, release uploads and policy changes are maintainer operations, not automatic side effects of a local build.

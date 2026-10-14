@@ -81,3 +81,15 @@ Transferência e rejeição de destino ocupado, bloqueios, IDs inválidos, rollb
 Passaram fmt, Clippy locked/all-targets com warnings negados, build locked, 34 testes Rust (22 core + 12 runtime), npm ci ignore-scripts, 8 testes MCP SDK e build TypeScript/Vite/Tauri. Miniatura isolada foi testada com alpha, camada oculta/opacidade zero, cel ausente, IDs inválidos e ausência de mutação/revisão. O teste MCP confirmou a imagem PNG isolada pelo SDK real.
 
 Na janela nativa 0.4.3, Slime-Menta foi aberto pela GUI: três camadas com miniaturas próprias apareceram somente na lateral; timeline com 32 quadros sem grade de camadas ou barra de cels. Selecionar Gel na lateral e o quadro 11 na timeline funcionou. Miniaturas conferidas visualmente após o carregamento. Não foi feita edição persistente no projeto do slime. Bundle ZIP verificado com codesign. A inspeção não cobre todas as janelas/tamanhos ou todos os recursos do editor.
+
+## 0.5.0 preview release gate
+
+Local macOS arm64: fmt, Clippy locked/all-targets/warnings denied, locked build and 34 Rust tests passed. Nine real MCP tests passed, including a host killed with SIGKILL after checkpoint and restoration in another process: editable state/undo preserved and original saved project not replaced. Config registration was tested with relocated paths containing spaces, explicit failure cases and a mock Codex CLI (no real global writes during unit tests).
+
+Portable ZIP was extracted/installed to a different location; signature verified and `--print` resolved engine/MCP paths from the installed directory. Actual installed SDK discovery/preview must use the matching workspace; no assumption of shared headless state. TypeScript/Vite/Tauri build passed. Catalog compared byte-for-byte to the binary. YAML syntax checked. Tracked source credential-pattern scan found no matching tokens/private keys; this is a targeted scan, not a security audit.
+
+Native 0.5.0 opened an original slime copy, with layer thumbnails and compact frame timeline. Screenshot and actual ScreenCaptureKit app-window recording are in docs/media; 235 frames, approximately 8.23 seconds, 1280×860. Video decoded through FFmpeg without errors and a representative frame was inspected. GIF is derived from the real recording; the separately labeled promotional cover is not evidence of engine output.
+
+`benchmark-0.5.0.json` records 128×128, 16 frames/two layers (524,288 cel pixels), 40 sequential JSONL round trips in a debug build. Median stroke edit about 2.9 ms; median PNG preview about 4.6 ms on this machine. These are workload-specific, include serialization, exclude GUI/MCP, and do not measure peak memory or certify production performance.
+
+GitHub runner validation is distinct from these local checks and must be observed after publication. Windows GUI/runtime, Linux GUI, notarization, crash within filesystem publication and power-loss scenarios remain unvalidated.

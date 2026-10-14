@@ -1,5 +1,16 @@
 # Histórico de versões
 
+## 0.5.0 — preview experimental
+
+- Build a partir de um checkout comum usando Cargo, sem depender do toolchain de desenvolvimento.
+- Pacote portátil macOS arm64 com GUI/CLI/MCP e dependências; instalação por usuário e registro MCP com caminhos descobertos no computador.
+- CI macOS/Linux para engine/adapters e macOS para desktop; verificação de catálogo e pacote manual por Actions.
+- Testes de instalação com espaços nos caminhos e recuperação após encerramento abrupto do host.
+- Miniaturas de camada atualizam durante reprodução, sem reiniciar um debounce maior que a duração dos quadros.
+- Capa promocional, screenshot real, gravação da janela e exemplo editável do slime no README.
+- Quick start, compatibilidade, contribuição, segurança e templates de issues. Funcionalidades e plataformas pendentes continuam explícitas.
+
+
 ## 0.4.3 — 13/10/2026
 
 - Remove lista de camadas duplicada e barra de cels da timeline. A faixa inferior volta a mostrar somente quadros.

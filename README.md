@@ -1,124 +1,99 @@
 # SpriteLab
 
-Pixel art for humans. Creative tools for agents.
+![SpriteLab — pixel art for humans, creative tools for agents](docs/media/spritelab-cover.png)
 
-SpriteLab is the first specialized editor in the proposed AssetForge open-source ecosystem. The Command Engine owns editing; desktop UI, CLI, Python and MCP are clients of that engine. This repository contains an executable Rust foundation, a **Tauri + React desktop prototype**, research and architectural decisions.
+[![CI](https://github.com/jose-pires-neto/SpriteLab/actions/workflows/ci.yml/badge.svg)](https://github.com/jose-pires-neto/SpriteLab/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-40546b)](LICENSE) [![Preview 0.5.0](https://img.shields.io/badge/preview-0.5.0-218e84)](https://github.com/jose-pires-neto/SpriteLab/releases)
 
-## What runs today
+**Pixel art for humans. Creative tools for agents.**
 
-- Original Rust command engine with 50 discoverable operations and generated JSON Schemas.
-- RGBA sprite documents, ordered layers, sparse frame/layer cels, palette metadata and forward animation tags.
-- Pixel strokes/lines, four-connected fill and rectangular buffer patches.
-- Atomic edit batches, monotonic session revisions, expected-revision guards and undo/redo.
-- Versioned editable `.spritelab` JSON projects; PNG import, canonical PNG preview/export and row-major spritesheets with metadata.
-- JSONL CLI; a Python batch example; local stdio MCP adapter using the official SDK.
-- Desktop canvas with pencil, eraser, line, fill, eyedropper, zoom, layers, frame playback, rectangular selections/transforms, shapes, brush alpha/size/symmetry, onion/grid, GIF, save/import/export and undo/redo. Detached stroke previews are rendered by Rust.
-- Tests comparing real CLI, Python and MCP paths. No external AI service is required.
+SpriteLab is an original, MIT-licensed pixel-art and animation editor with a Rust Command Engine. The desktop UI, CLI, Python scripts and MCP agents execute the same operations. MCP is an adapter; removing it does not remove editing capability.
 
-## Desktop (macOS arm64)
+**0.5.0 is an experimental preview**, not a complete Aseprite replacement. macOS arm64 desktop is validated locally; headless macOS/Linux and macOS desktop builds run in CI. No Windows desktop/session support is claimed. We are building the first editor in the proposed AssetForge ecosystem, not a 3D editor or asset database yet.
 
-The delivered `outputs/SpriteLab-0.4.3-macOS-arm64.zip` contains the desktop app. Double-click `outputs/Abrir SpriteLab.command` to extract and open a verified local copy; no development server or npm installation is needed. Projects live in `~/Documents/ChatGPT/SpriteLab/assets`; the app installs an original example project there on first launch. Add existing `.spritelab` or `.png` files to that folder to open/import them from Arquivo → Abrir/importar. Each desktop process owns a runtime; CLI/MCP can explicitly attach to its private local Unix session.
+## See it in action
 
-B/E/L/F/I select pencil/eraser/line/fill/eyedropper, Escape discards a pending stroke, Space toggles playback, Command-Z undoes, Command-Shift-Z redoes, Command-S saves. A duplicate/new frame is selected automatically. Save preserves layers/frames; PNG exports the current frame and spritesheet exports all frames in one row. This is a local debug prototype, locally ad-hoc signed; not a Developer ID signed/notarized public release. See [Portuguese usage guide](docs/COMO-USAR.md).
+![Real SpriteLab 0.5.0 desktop with Slime Menta, layer thumbnails and animation frames](docs/media/editor-slime-0.5.0.png)
 
-Build the desktop with system Rust/Node and the platform prerequisites for Tauri 2:
+| Slime Menta benchmark | Editable project |
+| --- | --- |
+| ![Slime Menta animation exported by SpriteLab](docs/media/slime-menta.gif) | 64×64 · 3 layers · 32 frames · 2.1 s loop. Original detached buffers were committed through MCP to the same Rust engine used by the GUI. [Open the example](examples/slime-menta/README.md). |
+
+[Watch the real editor recording (8 seconds)](docs/media/editor-slime-demo.mp4) · [Watch the exported animation (MP4)](docs/media/slime-menta-animation.mp4). The screenshot is an actual desktop capture; the cover is AI-assisted promotional art inspired by the original mascot. It is not an engine-rendered screenshot or a benchmark result.
+
+<details>
+<summary>Play the real editor recording as a GIF</summary>
+
+![Actual SpriteLab desktop playing Slime Menta](docs/media/editor-slime-demo.gif)
+
+</details>
+
+## Try it
+
+Download the macOS arm64 portable preview from [Releases](https://github.com/jose-pires-neto/SpriteLab/releases). Extract the ZIP, verify its checksum and open `Open SpriteLab.command` or `SpriteLab.app`. Optional installation and MCP registration are documented in [Quick start](docs/QUICKSTART.md).
+
+The app is a debug build, locally ad-hoc signed; it is **not Developer ID signed or notarized**. No Rust/npm setup is needed to open the downloaded GUI. MCP requires Node 22.19+ and your agent host. No online AI service or API key is required by SpriteLab itself.
+
+## What works
+
+- RGBA documents, ordered layers with per-layer thumbnails, sparse cels, frame duplication/reorder/duration, forward tags and animation playback.
+- Pencil/eraser/line/fill/eyedropper, rectangles/ellipses, rectangular selection/transforms, alpha, brush size, symmetry, pixel-perfect strokes, grid and onion skin.
+- Undo/redo, atomic edit batches, revision guards, bounded resources and automatic desktop recovery checkpoints.
+- Editable `.spritelab` JSON, PNG import/preview/export, animated GIF and row-major spritesheet export with metadata.
+- 50 typed operations with generated schemas, real CLI/Python/MCP parity tests, shared desktop sessions over private Unix sockets and independent headless sessions.
+
+## Build from source
+
+Install Rust 1.88+, Node 22.19+, Python 3 and the [Tauri platform prerequisites](https://v2.tauri.app/start/prerequisites/).
 
 ```sh
-cd apps/desktop
-npm ci --ignore-scripts
-npm run tauri -- build --debug --bundles app
+cargo build -p spritelab-cli --locked
+npm ci --ignore-scripts --prefix adapters/mcp
+npm ci --ignore-scripts --prefix apps/desktop
+./scripts/build-desktop.sh
 ```
 
-In this delivered workspace, `./scripts/build-desktop.sh` uses the isolated Rust toolchain; `./scripts/package-desktop.sh` produces the locally signed ZIP. For headless-only builds use `cargo build -p spritelab-cli --locked`; desktop compilation on Linux also needs Tauri system libraries.
+Scripts use Cargo on PATH; an optional delivered toolchain under `work/toolchain` is only a local convenience. The repository contains committed lockfiles. `./scripts/package-preview.sh` builds a portable macOS arm64 preview with GUI, CLI, MCP dependencies, notices and checksum.
 
-## Build and run
+## Use with agents
 
-With Rust installed:
+Open SpriteLab before connecting live MCP. The default workspace is `~/Documents/ChatGPT/SpriteLab/assets`. From a source checkout or your final extracted/installed preview location:
 
 ```sh
-cargo build --locked
-cargo test --workspace --locked
-./target/debug/spritelab --workspace ./demo --catalog
+node scripts/configure-mcp.mjs --workspace "$HOME/Documents/ChatGPT/SpriteLab/assets"
 ```
 
-In this delivered workspace, an isolated Rust toolchain is available under `work/toolchain`. It did not change the global shell PATH. Use `./scripts/local-cargo.sh build --locked` or `./scripts/local-cargo.sh test --workspace --locked` as a convenience. The toolchain is not part of this repository.
+This registers `spritelab_live` and `spritelab_headless` in Codex. `--print` emits JSON for another MCP host. Paths are discovered on your machine, not hardcoded to a developer's account. Reconnect after moving the installation or restarting the editor. Project-local Codex settings can override global registrations.
 
-A single CLI process owns a session and accepts newline-delimited JSON on stdin. Keep it running while submitting related operations:
+- **Live** attaches to the newest running session in the selected workspace. Confirm `editor.inspect`, document ID and revision before editing, especially with multiple windows.
+- **Headless** starts an independent engine. It does not edit the GUI's open documents.
+- Supply `expected_revision` on edits/history. Conflicts fail explicitly; no automatic merge or mutation retry exists.
+- `document.preview` returns a PNG; optional `layer_id` inspects isolated layer content. Save the editable project separately from exports.
+
+See [MCP/session guide](docs/MCP-SESSAO.md), [protocol](docs/PROTOCOL.md) and [generated catalog](docs/commands.json).
+
+## CLI / Python
 
 ```sh
-./target/debug/spritelab --workspace ./demo <<'JSONL'
-{"request_id":"1","document_id":"example","command":"document.create","args":{"width":32,"height":32}}
-{"request_id":"2","document_id":"example","expected_revision":0,"command":"canvas.stroke","args":{"layer_id":1,"frame_id":2,"points":[[8,8],[23,23]],"color":[242,104,68,255]}}
-{"request_id":"3","document_id":"example","command":"export.png","args":{"path":"example.png","frame_id":2,"overwrite":true}}
+mkdir -p demo
+./target/debug/spritelab --workspace demo <<'JSONL'
+{"document_id":"example","command":"document.create","args":{"width":32,"height":32}}
+{"document_id":"example","expected_revision":0,"command":"canvas.stroke","args":{"layer_id":1,"frame_id":2,"points":[[8,8],[23,23]],"color":[242,104,68,255]}}
+{"document_id":"example","command":"document.save","args":{"path":"example.spritelab","overwrite":false}}
+{"document_id":"example","command":"export.png","args":{"path":"example.png","frame_id":2,"overwrite":false}}
 JSONL
+python3 examples/generate_mushrooms.py --engine ./target/debug/spritelab --workspace demo
 ```
 
-`demo/` already exists. File paths must be relative to the selected workspace. Parent directories must exist. Creation starts with layer `1`, frame `2`, revision `0`; inspect returned IDs after later edits. Request IDs correlate responses; they are **not** durable idempotency keys.
+File paths are relative to the workspace; parent directories must exist. A new document starts with layer 1/frame 2; inspect returned IDs after edits/reopen. Request IDs correlate responses, not durable idempotency. The example composes detached original pixel buffers and commits them through engine commands.
 
-Generate four-frame example assets without third-party Python packages:
+## Known limits
 
-```sh
-python3 examples/generate_mushrooms.py --engine ./target/debug/spritelab --workspace ./demo
-python3 examples/generate_mushrooms.py --engine ./target/debug/spritelab --workspace ./demo --count 200
-```
+512×512, 32 layers, 64 frames, four open documents and 524,288 allocated cel pixels. History retains up to 32 entries with a conservative 32 MiB estimate. Recovery covers completed checkpoints every 15 seconds; the latest interval, undo and viewport are not recovered. No power-loss durability guarantee.
 
-The bulk example intentionally creates copies of a small deterministic test sprite. It demonstrates throughput and editable animation files, not AI-generated character diversity. It explicitly overwrites its own generated filenames.
+No lasso/masks, OS clipboard, indexed-color editing, custom brushes, linked-cel semantics, blend groups, tilemaps/slices, `.aseprite` I/O, packed atlas or reverse/ping-pong playback yet. No streaming events, long-running jobs/cancellation, transparent reconnect, GPU renderer or plugin ABI. See [coverage](docs/COBERTURA.md), [compatibility](docs/COMPATIBILITY.md) and [roadmap](docs/ROADMAP.md).
 
-## MCP
+## Contribute
 
-Node.js 22.19+ is supported for the adapter:
+Read [CONTRIBUTING](CONTRIBUTING.md), [architecture](docs/ARCHITECTURE.md), [ADRs](docs/adr) and [security policy](SECURITY.md). File reproducible bugs with OS, version, adapter and a minimal safe sample. CI checks engine behavior, real adapters, schema drift and desktop compilation. A passing headless suite is not evidence of exhaustive GUI/platform validation.
 
-```sh
-cd adapters/mcp
-npm ci --ignore-scripts
-npm test
-node server.mjs --engine /absolute/path/to/spritelab/target/debug/spritelab --workspace /absolute/path/to/project
-```
-
-Tools and their argument schemas are discovered from Rust at startup. For example, tool `spritelab_canvas_stroke` receives `{document_id, expected_revision?, request_id?, args}`. `spritelab_document_preview` returns a native MCP PNG image. `spritelab://documents/{document_id}` resources expose authoritative document snapshots. The adapter has no raster algorithms, history or persistence implementation.
-
-Example MCP registration (replace absolute paths):
-
-```json
-{
-  "mcpServers": {
-    "spritelab": {
-      "command": "/absolute/path/to/node",
-      "args": ["/absolute/path/to/spritelab/adapters/mcp/server.mjs", "--engine", "/absolute/path/to/spritelab/target/debug/spritelab", "--workspace", "/absolute/path/to/project"]
-    }
-  }
-}
-```
-
-Version 0.3 registers `spritelab_live` and `spritelab_headless` in the local Codex configuration. The live adapter attaches to the newest active desktop session in the configured workspace; headless keeps an isolated engine. See [session guide](docs/MCP-SESSAO.md).
-
-## Architecture and evidence
-
-- [Functional coverage and remaining gaps](docs/COBERTURA.md), [live MCP guide](docs/MCP-SESSAO.md).
-- [Architecture](docs/ARCHITECTURE.md), [roadmap](docs/ROADMAP.md), [protocol](docs/PROTOCOL.md).
-- [Portuguese research/decision report](docs/research/RELATORIO.md).
-- [Pinned Aseprite source investigation](docs/research/aseprite-source-map.md).
-- [REA evidence index](docs/research/evidence/index.json) and [generated command catalog](docs/commands.json).
-- [Validation results](docs/VALIDATION.md), [third-party notices](THIRD_PARTY_NOTICES.md).
-
-## Prototype boundaries
-
-Mask/lasso selections, dedicated pan tool, advanced onion controls, indexed-color editing, linked-cel edit semantics, blend modes/groups/tilemap/slices, Aseprite importer, GPU rendering, 3D editor, plugins or asset database has been implemented yet. The palette is metadata and does not constrain RGBA drawing. Tags are forward ranges only.
-
-Dimensions are limited to 512×512, 32 layers, 64 frames, 256 palette entries, 64 tags and 524,288 allocated cel pixels per document. A session supports four open documents; `document.close` releases one without auto-saving. Edits are serialized by the current process. History retains up to 32 entries and a conservative 32 MiB pixel estimate per document. This is copy-on-write snapshot history, not production tile-patch history.
-
-Input lines/files are limited to 16 MiB; atlases to 4,194,304 pixels. Long-running jobs, cancellation, durable idempotency and multi-process locking are future work. File replacement uses a same-directory temporary file with file sync; filesystem policy is application-level and does not promise confinement against concurrent hostile symlink changes. No power-loss durability claim is made for directory metadata.
-
-MIT applies to original SpriteLab code. Aseprite is a research reference, not a dependency, and no Aseprite implementation or artwork is included. Nothing has been published to GitHub or packaged as a public release.
-
-## Version 0.4.0
-
-Desktop recovery checkpoints all dirty documents every 15 seconds. Open a checkpoint from the Recuperação panel to restore it into a new unsaved document. Originals are never replaced. The same recovery commands are available through MCP and CLI; headless automation requests checkpoints explicitly. See [release notes](CHANGELOG.md) and [recovery contract](docs/adr/0005-recovery-snapshots.md). The last 15 seconds, undo history and viewport are not covered.
-
-## Workspace 0.4.1
-
-File operations live in Arquivo; sprite sizing lives in Sprite. Documents have tabs and opening another file preserves existing work. The context bar follows the active tool; only palette and layers remain in the right dock. Zoom/grid are in the status bar, onion skin is in the timeline. Recovery and file browsing use separate dialogs. Free docking is not implemented.
-
-## Workspace 0.4.3
-
-The timeline displays animation frames only. Layers remain in the right dock with isolated thumbnails for the current frame, generated by Rust. `document.preview` accepts optional `layer_id` to inspect raw layer content independently of visibility/opacity; omitting it preserves the canonical composite. This read-only query is available through MCP/CLI. `cel.transfer` remains an engine capability; the duplicated layer/cel matrix was removed from the GUI.
+Original code/assets use [MIT](LICENSE). Dependencies retain their own [notices](THIRD_PARTY_NOTICES.md). Aseprite/Photoshop are workflow references, not dependencies; no Aseprite implementation, artwork, palettes, fonts or icons are included. Research records describe observed architecture and explicitly distinguish evidence from future plans.

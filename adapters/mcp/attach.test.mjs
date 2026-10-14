@@ -36,3 +36,42 @@ test('attached MCP and independent CLI client share a real local session and vie
   assert.equal((await cli.execute({command:'document.list',args:{}})).result.documents.length,1);
  }catch(e){throw new Error(stage+": "+e.message,{cause:e})}finally{await client?.close();cli?.close();host.kill();await once(host,'exit');lines.close();if(session){await rm(session.socket,{force:true});}await rm(root,{recursive:true,force:true});}
 });
+
+test('committed recovery survives SIGKILL and restores editable state in a new process', async () => {
+ const root=await mkdtemp(join(tmpdir(),'sl-crash-'));
+ const host=spawn(binary,['--workspace',root,'--host'],{stdio:['ignore','pipe','inherit']});
+ const lines=createInterface({input:host.stdout});
+ let session,cli,restarted;
+ try {
+  session=JSON.parse((await once(lines,'line'))[0]);
+  cli=new EngineClient(binary,null,session.socket);
+  const call=async(command,args={},document_id='crash')=>{
+   const r=await cli.execute({command,args,document_id});assert(r.ok,JSON.stringify(r));return r;
+  };
+  await call('document.create',{width:8,height:8});
+  await call('canvas.stroke',{layer_id:1,frame_id:2,points:[[2,2]],color:[40,180,100,255]});
+  await call('document.save',{path:'original.spritelab'});
+  await call('frame.add',{source_frame_id:2,duration_ms:120});
+  const original=await call('document.inspect');
+  await call('recovery.checkpoint');
+  const exiting=once(host,'exit'); host.kill('SIGKILL'); await exiting;
+  cli.close(); cli=undefined;
+  restarted=new EngineClient(binary,root);
+  const query=async(command,args={},document_id='restored')=>{
+   const r=await restarted.execute({command,args,document_id});assert(r.ok,JSON.stringify(r));return r;
+  };
+  const entries=await query('recovery.list'); assert.equal(entries.result.entries.length,1);
+  await query('recovery.restore',{entry:entries.result.entries[0].entry});
+  const restored=await query('document.inspect'); assert.deepEqual(restored.result.document,original.result.document);assert.equal(restored.revision,0);
+  await query('canvas.stroke',{layer_id:1,frame_id:2,points:[[0,0]],color:[255,0,0,255]});
+  await query('history.undo');assert.deepEqual((await query('document.inspect')).result.document,original.result.document);
+  await query('document.save',{path:'recovered.spritelab'});
+  await query('document.open',{path:'original.spritelab'},'saved-original');
+  const saved=await query('document.inspect',{},'saved-original');assert.equal(saved.result.document.frames.length,1);
+ } finally {
+  cli?.close();restarted?.close();lines.close();
+  if(host.exitCode===null&&host.signalCode===null){const exiting=once(host,'exit');host.kill();await exiting;}
+  if(session)await rm(session.socket,{force:true});
+  await rm(root,{recursive:true,force:true});
+ }
+});

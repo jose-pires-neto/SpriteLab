@@ -13,7 +13,7 @@ fn main() {
 fn run() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = std::env::args().skip(1).collect();
     if args.iter().any(|s| s == "--help") {
-        println!("SpriteLab 0.4.3 — headless command engine\nUsage: spritelab --workspace DIRECTORY [--catalog | --host]\n       spritelab --attach SOCKET\nJSONL requests on stdin, structured responses on stdout.\nHeadless owns an isolated session; --attach shares an existing host. Paths are workspace-relative.");
+        println!("SpriteLab 0.5.0 — headless command engine\nUsage: spritelab --workspace DIRECTORY [--catalog | --host]\n       spritelab --attach SOCKET\nJSONL requests on stdin, structured responses on stdout.\nHeadless owns an isolated session; --attach shares an existing host. Paths are workspace-relative.");
         return Ok(());
     }
     #[cfg(unix)]

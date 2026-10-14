@@ -1,0 +1,337 @@
+{
+  "frames": [
+    {
+      "duration_ms": 100,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 0,
+        "y": 0
+      },
+      "frame_id": 2
+    },
+    {
+      "duration_ms": 100,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 64,
+        "y": 0
+      },
+      "frame_id": 5
+    },
+    {
+      "duration_ms": 100,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 128,
+        "y": 0
+      },
+      "frame_id": 6
+    },
+    {
+      "duration_ms": 70,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 192,
+        "y": 0
+      },
+      "frame_id": 7
+    },
+    {
+      "duration_ms": 70,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 256,
+        "y": 0
+      },
+      "frame_id": 8
+    },
+    {
+      "duration_ms": 50,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 320,
+        "y": 0
+      },
+      "frame_id": 9
+    },
+    {
+      "duration_ms": 50,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 384,
+        "y": 0
+      },
+      "frame_id": 10
+    },
+    {
+      "duration_ms": 50,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 448,
+        "y": 0
+      },
+      "frame_id": 11
+    },
+    {
+      "duration_ms": 50,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 0,
+        "y": 64
+      },
+      "frame_id": 12
+    },
+    {
+      "duration_ms": 50,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 64,
+        "y": 64
+      },
+      "frame_id": 13
+    },
+    {
+      "duration_ms": 50,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 128,
+        "y": 64
+      },
+      "frame_id": 14
+    },
+    {
+      "duration_ms": 50,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 192,
+        "y": 64
+      },
+      "frame_id": 15
+    },
+    {
+      "duration_ms": 70,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 256,
+        "y": 64
+      },
+      "frame_id": 16
+    },
+    {
+      "duration_ms": 70,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 320,
+        "y": 64
+      },
+      "frame_id": 17
+    },
+    {
+      "duration_ms": 70,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 384,
+        "y": 64
+      },
+      "frame_id": 18
+    },
+    {
+      "duration_ms": 70,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 448,
+        "y": 64
+      },
+      "frame_id": 19
+    },
+    {
+      "duration_ms": 70,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 0,
+        "y": 128
+      },
+      "frame_id": 20
+    },
+    {
+      "duration_ms": 70,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 64,
+        "y": 128
+      },
+      "frame_id": 21
+    },
+    {
+      "duration_ms": 50,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 128,
+        "y": 128
+      },
+      "frame_id": 22
+    },
+    {
+      "duration_ms": 50,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 192,
+        "y": 128
+      },
+      "frame_id": 23
+    },
+    {
+      "duration_ms": 50,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 256,
+        "y": 128
+      },
+      "frame_id": 24
+    },
+    {
+      "duration_ms": 50,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 320,
+        "y": 128
+      },
+      "frame_id": 25
+    },
+    {
+      "duration_ms": 50,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 384,
+        "y": 128
+      },
+      "frame_id": 26
+    },
+    {
+      "duration_ms": 50,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 448,
+        "y": 128
+      },
+      "frame_id": 27
+    },
+    {
+      "duration_ms": 50,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 0,
+        "y": 192
+      },
+      "frame_id": 28
+    },
+    {
+      "duration_ms": 50,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 64,
+        "y": 192
+      },
+      "frame_id": 29
+    },
+    {
+      "duration_ms": 50,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 128,
+        "y": 192
+      },
+      "frame_id": 30
+    },
+    {
+      "duration_ms": 70,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 192,
+        "y": 192
+      },
+      "frame_id": 31
+    },
+    {
+      "duration_ms": 70,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 256,
+        "y": 192
+      },
+      "frame_id": 32
+    },
+    {
+      "duration_ms": 100,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 320,
+        "y": 192
+      },
+      "frame_id": 33
+    },
+    {
+      "duration_ms": 100,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 384,
+        "y": 192
+      },
+      "frame_id": 34
+    },
+    {
+      "duration_ms": 100,
+      "frame": {
+        "h": 64,
+        "w": 64,
+        "x": 448,
+        "y": 192
+      },
+      "frame_id": 35
+    }
+  ],
+  "image": "Slime-Menta-spritesheet.png",
+  "schema": "spritelab.atlas/1",
+  "size": {
+    "h": 256,
+    "w": 512
+  },
+  "tags": [
+    {
+      "from_frame": 2,
+      "name": "saltinho",
+      "to_frame": 35
+    }
+  ]
+}
